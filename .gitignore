@@ -6,8 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+#Files
+cloudformation-template-update-stack.json
+meta.json
+serverless-state.json
+
 # Distribution / packaging
-.serverless/
+./*/serverless/
 .Python
 build/
 develop-eggs/
