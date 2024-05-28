@@ -1,0 +1,185 @@
+service: videos-service
+frameworkVersion: '4'
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  exclude:
+    - node_modules/**
+    - .idea/**
+    - .requirements/**
+    - env/**
+    - README.md
+    - package.json
+    - package-lock.json
+    - requirements.txt
+
+# Global configuration
+provider:
+  name: aws
+  runtime: python3.10
+  stage: dev
+  region: eu-central-1
+  memorySize: 128
+  timeout: 10
+  environment:
+    TABLE_NAME: Videos
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [VideosTable, Arn]
+
+# Lambda functions
+functions:
+  createVideo:
+    handler: createVideo/create_video.create
+    package:
+      include: 'createVideo/**'
+    events:
+      - http:
+          path: videos
+          method: post
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  getVideos:
+    handler: getVideos/get_videos.get_all
+    package:
+      include: 'getVideos/**'
+    events:
+      - http:
+          path: videos
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  getVideo:
+    handler: getVideo/get_video.get_one
+    package:
+      include: 'getVideo/**'
+    events:
+      - http:
+          path: videos/{id}
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  updateVideo:
+    handler: updateVideo/update_video.update
+    package:
+      include: 'updateVideo/**'
+    events:
+      - http:
+          path: videos/{id}
+          method: put
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  deleteVideo:
+    handler: deleteVideo/delete_video.delete
+    package:
+      include: 'deleteVideo/**'
+    events:
+      - http:
+          path: videos/{id}
+          method: delete
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+# Additional resources (S3 storage, DynamoDB tables,...)
+# Written in CloudFormation template syntax
+resources:
+  Resources:
+    VideosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Videos
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+          - AttributeName: size
+            AttributeType: N
+          - AttributeName: datatype
+            AttributeType: S
+          - AttributeName: modified
+            AttributeType: S
+          - AttributeName: created
+            AttributeType: S
+          - AttributeName: s3key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+        - IndexName: SizeIndex
+          KeySchema:
+            - AttributeName: size
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: DatatypeIndex
+          KeySchema:
+            - AttributeName: datatype
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: ModifiedIndex
+          KeySchema:
+            - AttributeName: modified
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: CreatedIndex
+          KeySchema:
+            - AttributeName: created
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: S3keyIndex
+          KeySchema:
+            - AttributeName: s3key
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
