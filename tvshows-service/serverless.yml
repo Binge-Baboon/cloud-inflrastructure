@@ -1,0 +1,197 @@
+service: tvshows-service
+frameworkVersion: '4'
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  exclude:
+    - node_modules/**
+    - .idea/**
+    - .requirements/**
+    - env/**
+    - README.md
+    - package.json
+    - package-lock.json
+    - requirements.txt
+
+provider:
+  name: aws
+  runtime: python3.10
+  stage: dev
+  region: eu-central-1
+  memorySize: 128
+  timeout: 10
+  environment:
+    TABLE_NAME: TVShows
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [TVShowsTable, Arn]
+
+functions:
+  createTVShow:
+    handler: createTVShow/create_tvshow.create
+    package:
+      include:
+        - createTVShow/**
+    events:
+      - http:
+          path: tvshows
+          method: post
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  getTVShows:
+    handler: getTVShows/get_tvshows.get_all
+    package:
+      include:
+        - getTVShows/**
+    events:
+      - http:
+          path: tvshows
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  getTVShow:
+    handler: getTVShow/get_tvshow.get_one
+    package:
+      include:
+        - getTVShow/**
+    events:
+      - http:
+          path: tvshows/{id}
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  updateTVShow:
+    handler: updateTVShow/update_tvshow.update
+    package:
+      include:
+        - updateTVShow/**
+    events:
+      - http:
+          path: tvshows/{id}
+          method: put
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+  deleteTVShow:
+    handler: deleteTVShow/delete_tvshow.delete
+    package:
+      include:
+        - deleteTVShow/**
+    events:
+      - http:
+          path: tvshows/{id}
+          method: delete
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+
+resources:
+  Resources:
+    TVShowsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TVShows
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+          - AttributeName: title
+            AttributeType: S
+          - AttributeName: genres
+            AttributeType: S
+          - AttributeName: actors
+            AttributeType: S
+          - AttributeName: directors
+            AttributeType: S
+          - AttributeName: description
+            AttributeType: S
+          - AttributeName: rating
+            AttributeType: N
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+          - IndexName: TitleIndex
+            KeySchema:
+              - AttributeName: title
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: RatingIndex
+            KeySchema:
+              - AttributeName: rating
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: DescriptionIndex
+            KeySchema:
+              - AttributeName: description
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: GenresIndex
+            KeySchema:
+              - AttributeName: genres
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: ActorsIndex
+            KeySchema:
+              - AttributeName: actors
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: DirectorsIndex
+            KeySchema:
+              - AttributeName: directors
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
