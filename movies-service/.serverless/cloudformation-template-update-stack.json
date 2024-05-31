@@ -206,7 +206,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
         },
         "Handler": "createMovie/create_movie.create",
         "Runtime": "python3.10",
@@ -236,7 +236,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
         },
         "Handler": "getMovies/get_movies.get_all",
         "Runtime": "python3.10",
@@ -266,7 +266,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
         },
         "Handler": "getMovie/get_movie.get_one",
         "Runtime": "python3.10",
@@ -296,7 +296,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
         },
         "Handler": "updateMovie/update_movie.update",
         "Runtime": "python3.10",
@@ -326,7 +326,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
         },
         "Handler": "deleteMovie/delete_movie.delete",
         "Runtime": "python3.10",
@@ -349,81 +349,62 @@
         "DeleteMovieLogGroup"
       ]
     },
-    "CreateMovieLambdaVersionQOiYhED6tzpwlMQmiTiG029sk7Ng8WBcJnWKPEu3vGU": {
+    "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateMovieLambdaFunction"
         },
-        "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
       }
     },
-    "GetMoviesLambdaVersionolKovlp2lyI2wCeXUsQm3X6RCCXnZ60AztIoRupiTY": {
+    "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetMoviesLambdaFunction"
         },
-        "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
       }
     },
-    "GetMovieLambdaVersionI5ZEZFZKjFaB00j0cMzv6a3mR0AbnobVZfq8Wb9PfF8": {
+    "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetMovieLambdaFunction"
         },
-        "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
       }
     },
-    "UpdateMovieLambdaVersionWZOlnguZpmQrbSzPgDHdwxjKM3VEEwEqK5LPP1pHWro": {
+    "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "UpdateMovieLambdaFunction"
         },
-        "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
       }
     },
-    "DeleteMovieLambdaVersionV3yyD8WlEyEtboRR9SFTLpJILCO8MM9YRE6v0Ccd88I": {
+    "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "DeleteMovieLambdaFunction"
         },
-        "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
-      }
-    },
-    "ApiGatewayRestApi": {
-      "Type": "AWS::ApiGateway::RestApi",
-      "Properties": {
-        "Name": "dev-movies-service",
-        "EndpointConfiguration": {
-          "Types": [
-            "EDGE"
-          ]
-        },
-        "Policy": ""
+        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
       }
     },
     "ApiGatewayResourceMovies": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "ApiGatewayRestApi",
-            "RootResourceId"
-          ]
-        },
+        "ParentId": "6jqaa76ay7",
         "PathPart": "movies",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
+        "RestApiId": "jcmn0kq6wj"
       }
     },
     "ApiGatewayResourceMoviesIdVar": {
@@ -433,9 +414,7 @@
           "Ref": "ApiGatewayResourceMovies"
         },
         "PathPart": "{id}",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
+        "RestApiId": "jcmn0kq6wj"
       }
     },
     "ApiGatewayMethodMoviesOptions": {
@@ -478,9 +457,7 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMovies"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
+        "RestApiId": "jcmn0kq6wj"
       }
     },
     "ApiGatewayMethodMoviesIdVarOptions": {
@@ -523,9 +500,7 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMoviesIdVar"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
+        "RestApiId": "jcmn0kq6wj"
       }
     },
     "ApiGatewayMethodMoviesPost": {
@@ -536,11 +511,10 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMovies"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": "i7pzyk",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",
@@ -582,11 +556,10 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMovies"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": "i7pzyk",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",
@@ -628,11 +601,10 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMoviesIdVar"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": "i7pzyk",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",
@@ -674,11 +646,10 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMoviesIdVar"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": "i7pzyk",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",
@@ -720,11 +691,10 @@
         "ResourceId": {
           "Ref": "ApiGatewayResourceMoviesIdVar"
         },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": "i7pzyk",
         "Integration": {
           "IntegrationHttpMethod": "POST",
           "Type": "AWS_PROXY",
@@ -758,12 +728,10 @@
         "DeleteMovieLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1716889954197": {
+    "ApiGatewayDeployment1717185494902": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
+        "RestApiId": "jcmn0kq6wj",
         "StageName": "dev"
       },
       "DependsOn": [
@@ -804,9 +772,7 @@
                 "Ref": "AWS::AccountId"
               },
               ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
+              "jcmn0kq6wj",
               "/*/*"
             ]
           ]
@@ -841,9 +807,7 @@
                 "Ref": "AWS::AccountId"
               },
               ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
+              "jcmn0kq6wj",
               "/*/*"
             ]
           ]
@@ -878,9 +842,7 @@
                 "Ref": "AWS::AccountId"
               },
               ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
+              "jcmn0kq6wj",
               "/*/*"
             ]
           ]
@@ -915,9 +877,7 @@
                 "Ref": "AWS::AccountId"
               },
               ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
+              "jcmn0kq6wj",
               "/*/*"
             ]
           ]
@@ -952,9 +912,7 @@
                 "Ref": "AWS::AccountId"
               },
               ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
+              "jcmn0kq6wj",
               "/*/*"
             ]
           ]
@@ -1078,7 +1036,7 @@
     "CreateMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateMovieLambdaVersionQOiYhED6tzpwlMQmiTiG029sk7Ng8WBcJnWKPEu3vGU"
+        "Ref": "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc"
       },
       "Export": {
         "Name": "sls-movies-service-dev-CreateMovieLambdaFunctionQualifiedArn"
@@ -1087,7 +1045,7 @@
     "GetMoviesLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetMoviesLambdaVersionolKovlp2lyI2wCeXUsQm3X6RCCXnZ60AztIoRupiTY"
+        "Ref": "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA"
       },
       "Export": {
         "Name": "sls-movies-service-dev-GetMoviesLambdaFunctionQualifiedArn"
@@ -1096,7 +1054,7 @@
     "GetMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetMovieLambdaVersionI5ZEZFZKjFaB00j0cMzv6a3mR0AbnobVZfq8Wb9PfF8"
+        "Ref": "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM"
       },
       "Export": {
         "Name": "sls-movies-service-dev-GetMovieLambdaFunctionQualifiedArn"
@@ -1105,7 +1063,7 @@
     "UpdateMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "UpdateMovieLambdaVersionWZOlnguZpmQrbSzPgDHdwxjKM3VEEwEqK5LPP1pHWro"
+        "Ref": "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE"
       },
       "Export": {
         "Name": "sls-movies-service-dev-UpdateMovieLambdaFunctionQualifiedArn"
@@ -1114,7 +1072,7 @@
     "DeleteMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "DeleteMovieLambdaVersionV3yyD8WlEyEtboRR9SFTLpJILCO8MM9YRE6v0Ccd88I"
+        "Ref": "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g"
       },
       "Export": {
         "Name": "sls-movies-service-dev-DeleteMovieLambdaFunctionQualifiedArn"
@@ -1127,9 +1085,7 @@
           "",
           [
             "https://",
-            {
-              "Ref": "ApiGatewayRestApi"
-            },
+            "jcmn0kq6wj",
             ".execute-api.",
             {
               "Ref": "AWS::Region"

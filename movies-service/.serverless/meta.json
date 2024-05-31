@@ -1,10 +1,10 @@
 {
-  "C:\\Programiranje\\FAX\\CloudComputing\\ServerlessBingeBaboon\\movies-service": {
+  "C:\\Programiranje\\Projects\\BingeBaboon\\cloud-inflrastructure\\movies-service": {
     "versionSfCore": null,
-    "versionFramework": "4.0.30",
+    "versionFramework": "4.0.33",
     "isWithinCompose": false,
     "composeOrgName": null,
-    "servicePath": "C:\\Programiranje\\FAX\\CloudComputing\\ServerlessBingeBaboon\\movies-service",
+    "servicePath": "C:\\Programiranje\\Projects\\BingeBaboon\\cloud-inflrastructure\\movies-service",
     "serviceConfigFileName": "serverless.yml",
     "service": {
       "service": "movies-service",
@@ -12,6 +12,13 @@
       "plugins": [
         "serverless-python-requirements"
       ],
+      "custom": {
+        "variables": {
+          "restApiId": "jcmn0kq6wj",
+          "restApiRootResourceId": "6jqaa76ay7",
+          "authorizerId": "i7pzyk"
+        }
+      },
       "package": {
         "exclude": [
           "node_modules/**",
@@ -24,8 +31,8 @@
           "requirements.txt"
         ],
         "artifactsS3KeyDirname": "serverless/movies-service/dev/code-artifacts",
-        "artifact": "C:\\Programiranje\\FAX\\CloudComputing\\ServerlessBingeBaboon\\movies-service\\.serverless\\movies-service.zip",
-        "artifactDirectoryName": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z"
+        "artifact": "C:\\Programiranje\\Projects\\BingeBaboon\\cloud-inflrastructure\\movies-service\\.serverless\\movies-service.zip",
+        "artifactDirectoryName": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z"
       },
       "provider": {
         "name": "aws",
@@ -36,6 +43,10 @@
         "timeout": 10,
         "environment": {
           "TABLE_NAME": "Movies"
+        },
+        "apiGateway": {
+          "restApiId": "jcmn0kq6wj",
+          "restApiRootResourceId": "6jqaa76ay7"
         },
         "iamRoleStatements": [
           {
@@ -268,7 +279,7 @@
                   "S3Bucket": {
                     "Ref": "ServerlessDeploymentBucket"
                   },
-                  "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+                  "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
                 },
                 "Handler": "createMovie/create_movie.create",
                 "Runtime": "python3.10",
@@ -298,7 +309,7 @@
                   "S3Bucket": {
                     "Ref": "ServerlessDeploymentBucket"
                   },
-                  "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+                  "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
                 },
                 "Handler": "getMovies/get_movies.get_all",
                 "Runtime": "python3.10",
@@ -328,7 +339,7 @@
                   "S3Bucket": {
                     "Ref": "ServerlessDeploymentBucket"
                   },
-                  "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+                  "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
                 },
                 "Handler": "getMovie/get_movie.get_one",
                 "Runtime": "python3.10",
@@ -358,7 +369,7 @@
                   "S3Bucket": {
                     "Ref": "ServerlessDeploymentBucket"
                   },
-                  "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+                  "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
                 },
                 "Handler": "updateMovie/update_movie.update",
                 "Runtime": "python3.10",
@@ -388,7 +399,7 @@
                   "S3Bucket": {
                     "Ref": "ServerlessDeploymentBucket"
                   },
-                  "S3Key": "serverless/movies-service/dev/1716889954747-2024-05-28T09:52:34.747Z/movies-service.zip"
+                  "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
                 },
                 "Handler": "deleteMovie/delete_movie.delete",
                 "Runtime": "python3.10",
@@ -411,81 +422,62 @@
                 "DeleteMovieLogGroup"
               ]
             },
-            "CreateMovieLambdaVersionQOiYhED6tzpwlMQmiTiG029sk7Ng8WBcJnWKPEu3vGU": {
+            "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "CreateMovieLambdaFunction"
                 },
-                "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+                "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
               }
             },
-            "GetMoviesLambdaVersionolKovlp2lyI2wCeXUsQm3X6RCCXnZ60AztIoRupiTY": {
+            "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "GetMoviesLambdaFunction"
                 },
-                "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+                "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
               }
             },
-            "GetMovieLambdaVersionI5ZEZFZKjFaB00j0cMzv6a3mR0AbnobVZfq8Wb9PfF8": {
+            "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "GetMovieLambdaFunction"
                 },
-                "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+                "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
               }
             },
-            "UpdateMovieLambdaVersionWZOlnguZpmQrbSzPgDHdwxjKM3VEEwEqK5LPP1pHWro": {
+            "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "UpdateMovieLambdaFunction"
                 },
-                "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
+                "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
               }
             },
-            "DeleteMovieLambdaVersionV3yyD8WlEyEtboRR9SFTLpJILCO8MM9YRE6v0Ccd88I": {
+            "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "DeleteMovieLambdaFunction"
                 },
-                "CodeSha256": "pCkJqVZu8g0eSnCknBjAnEGnFjd+0FNBX9KSHb1ag8M="
-              }
-            },
-            "ApiGatewayRestApi": {
-              "Type": "AWS::ApiGateway::RestApi",
-              "Properties": {
-                "Name": "dev-movies-service",
-                "EndpointConfiguration": {
-                  "Types": [
-                    "EDGE"
-                  ]
-                },
-                "Policy": ""
+                "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
               }
             },
             "ApiGatewayResourceMovies": {
               "Type": "AWS::ApiGateway::Resource",
               "Properties": {
-                "ParentId": {
-                  "Fn::GetAtt": [
-                    "ApiGatewayRestApi",
-                    "RootResourceId"
-                  ]
-                },
+                "ParentId": "6jqaa76ay7",
                 "PathPart": "movies",
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                }
+                "RestApiId": "jcmn0kq6wj"
               }
             },
             "ApiGatewayResourceMoviesIdVar": {
@@ -495,9 +487,7 @@
                   "Ref": "ApiGatewayResourceMovies"
                 },
                 "PathPart": "{id}",
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                }
+                "RestApiId": "jcmn0kq6wj"
               }
             },
             "ApiGatewayMethodMoviesOptions": {
@@ -540,9 +530,7 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMovies"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                }
+                "RestApiId": "jcmn0kq6wj"
               }
             },
             "ApiGatewayMethodMoviesIdVarOptions": {
@@ -585,9 +573,7 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMoviesIdVar"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                }
+                "RestApiId": "jcmn0kq6wj"
               }
             },
             "ApiGatewayMethodMoviesPost": {
@@ -598,11 +584,10 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMovies"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "ApiKeyRequired": "<REDACTED>",
-                "AuthorizationType": "NONE",
+                "AuthorizationType": "COGNITO_USER_POOLS",
+                "AuthorizerId": "i7pzyk",
                 "Integration": {
                   "IntegrationHttpMethod": "POST",
                   "Type": "AWS_PROXY",
@@ -644,11 +629,10 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMovies"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "ApiKeyRequired": "<REDACTED>",
-                "AuthorizationType": "NONE",
+                "AuthorizationType": "COGNITO_USER_POOLS",
+                "AuthorizerId": "i7pzyk",
                 "Integration": {
                   "IntegrationHttpMethod": "POST",
                   "Type": "AWS_PROXY",
@@ -690,11 +674,10 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMoviesIdVar"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "ApiKeyRequired": "<REDACTED>",
-                "AuthorizationType": "NONE",
+                "AuthorizationType": "COGNITO_USER_POOLS",
+                "AuthorizerId": "i7pzyk",
                 "Integration": {
                   "IntegrationHttpMethod": "POST",
                   "Type": "AWS_PROXY",
@@ -736,11 +719,10 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMoviesIdVar"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "ApiKeyRequired": "<REDACTED>",
-                "AuthorizationType": "NONE",
+                "AuthorizationType": "COGNITO_USER_POOLS",
+                "AuthorizerId": "i7pzyk",
                 "Integration": {
                   "IntegrationHttpMethod": "POST",
                   "Type": "AWS_PROXY",
@@ -782,11 +764,10 @@
                 "ResourceId": {
                   "Ref": "ApiGatewayResourceMoviesIdVar"
                 },
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "ApiKeyRequired": "<REDACTED>",
-                "AuthorizationType": "NONE",
+                "AuthorizationType": "COGNITO_USER_POOLS",
+                "AuthorizerId": "i7pzyk",
                 "Integration": {
                   "IntegrationHttpMethod": "POST",
                   "Type": "AWS_PROXY",
@@ -820,12 +801,10 @@
                 "DeleteMovieLambdaPermissionApiGateway"
               ]
             },
-            "ApiGatewayDeployment1716889954197": {
+            "ApiGatewayDeployment1717185494902": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
-                "RestApiId": {
-                  "Ref": "ApiGatewayRestApi"
-                },
+                "RestApiId": "jcmn0kq6wj",
                 "StageName": "dev"
               },
               "DependsOn": [
@@ -866,9 +845,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       ":",
-                      {
-                        "Ref": "ApiGatewayRestApi"
-                      },
+                      "jcmn0kq6wj",
                       "/*/*"
                     ]
                   ]
@@ -903,9 +880,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       ":",
-                      {
-                        "Ref": "ApiGatewayRestApi"
-                      },
+                      "jcmn0kq6wj",
                       "/*/*"
                     ]
                   ]
@@ -940,9 +915,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       ":",
-                      {
-                        "Ref": "ApiGatewayRestApi"
-                      },
+                      "jcmn0kq6wj",
                       "/*/*"
                     ]
                   ]
@@ -977,9 +950,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       ":",
-                      {
-                        "Ref": "ApiGatewayRestApi"
-                      },
+                      "jcmn0kq6wj",
                       "/*/*"
                     ]
                   ]
@@ -1014,9 +985,7 @@
                         "Ref": "AWS::AccountId"
                       },
                       ":",
-                      {
-                        "Ref": "ApiGatewayRestApi"
-                      },
+                      "jcmn0kq6wj",
                       "/*/*"
                     ]
                   ]
@@ -1140,7 +1109,7 @@
             "CreateMovieLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "CreateMovieLambdaVersionQOiYhED6tzpwlMQmiTiG029sk7Ng8WBcJnWKPEu3vGU"
+                "Ref": "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc"
               },
               "Export": {
                 "Name": "sls-movies-service-dev-CreateMovieLambdaFunctionQualifiedArn"
@@ -1149,7 +1118,7 @@
             "GetMoviesLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "GetMoviesLambdaVersionolKovlp2lyI2wCeXUsQm3X6RCCXnZ60AztIoRupiTY"
+                "Ref": "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA"
               },
               "Export": {
                 "Name": "sls-movies-service-dev-GetMoviesLambdaFunctionQualifiedArn"
@@ -1158,7 +1127,7 @@
             "GetMovieLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "GetMovieLambdaVersionI5ZEZFZKjFaB00j0cMzv6a3mR0AbnobVZfq8Wb9PfF8"
+                "Ref": "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM"
               },
               "Export": {
                 "Name": "sls-movies-service-dev-GetMovieLambdaFunctionQualifiedArn"
@@ -1167,7 +1136,7 @@
             "UpdateMovieLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "UpdateMovieLambdaVersionWZOlnguZpmQrbSzPgDHdwxjKM3VEEwEqK5LPP1pHWro"
+                "Ref": "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE"
               },
               "Export": {
                 "Name": "sls-movies-service-dev-UpdateMovieLambdaFunctionQualifiedArn"
@@ -1176,7 +1145,7 @@
             "DeleteMovieLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "DeleteMovieLambdaVersionV3yyD8WlEyEtboRR9SFTLpJILCO8MM9YRE6v0Ccd88I"
+                "Ref": "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g"
               },
               "Export": {
                 "Name": "sls-movies-service-dev-DeleteMovieLambdaFunctionQualifiedArn"
@@ -1189,9 +1158,7 @@
                   "",
                   [
                     "https://",
-                    {
-                      "Ref": "ApiGatewayRestApi"
-                    },
+                    "jcmn0kq6wj",
                     ".execute-api.",
                     {
                       "Ref": "AWS::Region"
@@ -1320,6 +1287,14 @@
                     "*"
                   ]
                 },
+                "authorizer": {
+                  "type": "COGNITO_USER_POOLS",
+                  "managedExternally": false,
+                  "authorizerId": "i7pzyk",
+                  "resultTtlInSeconds": 300,
+                  "identitySource": "method.request.header.Authorization",
+                  "claims": []
+                },
                 "integration": "AWS_PROXY"
               }
             }
@@ -1329,7 +1304,7 @@
           "timeout": 10,
           "runtime": "python3.10",
           "vpc": {},
-          "versionLogicalId": "CreateMovieLambdaVersionQOiYhED6tzpwlMQmiTiG029sk7Ng8WBcJnWKPEu3vGU"
+          "versionLogicalId": "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc"
         },
         "getMovies": {
           "handler": "getMovies/get_movies.get_all",
@@ -1356,6 +1331,14 @@
                     "*"
                   ]
                 },
+                "authorizer": {
+                  "type": "COGNITO_USER_POOLS",
+                  "managedExternally": false,
+                  "authorizerId": "i7pzyk",
+                  "resultTtlInSeconds": 300,
+                  "identitySource": "method.request.header.Authorization",
+                  "claims": []
+                },
                 "integration": "AWS_PROXY"
               }
             }
@@ -1365,7 +1348,7 @@
           "timeout": 10,
           "runtime": "python3.10",
           "vpc": {},
-          "versionLogicalId": "GetMoviesLambdaVersionolKovlp2lyI2wCeXUsQm3X6RCCXnZ60AztIoRupiTY"
+          "versionLogicalId": "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA"
         },
         "getMovie": {
           "handler": "getMovie/get_movie.get_one",
@@ -1392,6 +1375,14 @@
                     "*"
                   ]
                 },
+                "authorizer": {
+                  "type": "COGNITO_USER_POOLS",
+                  "managedExternally": false,
+                  "authorizerId": "i7pzyk",
+                  "resultTtlInSeconds": 300,
+                  "identitySource": "method.request.header.Authorization",
+                  "claims": []
+                },
                 "integration": "AWS_PROXY"
               }
             }
@@ -1401,7 +1392,7 @@
           "timeout": 10,
           "runtime": "python3.10",
           "vpc": {},
-          "versionLogicalId": "GetMovieLambdaVersionI5ZEZFZKjFaB00j0cMzv6a3mR0AbnobVZfq8Wb9PfF8"
+          "versionLogicalId": "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM"
         },
         "updateMovie": {
           "handler": "updateMovie/update_movie.update",
@@ -1428,6 +1419,14 @@
                     "*"
                   ]
                 },
+                "authorizer": {
+                  "type": "COGNITO_USER_POOLS",
+                  "managedExternally": false,
+                  "authorizerId": "i7pzyk",
+                  "resultTtlInSeconds": 300,
+                  "identitySource": "method.request.header.Authorization",
+                  "claims": []
+                },
                 "integration": "AWS_PROXY"
               }
             }
@@ -1437,7 +1436,7 @@
           "timeout": 10,
           "runtime": "python3.10",
           "vpc": {},
-          "versionLogicalId": "UpdateMovieLambdaVersionWZOlnguZpmQrbSzPgDHdwxjKM3VEEwEqK5LPP1pHWro"
+          "versionLogicalId": "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE"
         },
         "deleteMovie": {
           "handler": "deleteMovie/delete_movie.delete",
@@ -1464,6 +1463,14 @@
                     "*"
                   ]
                 },
+                "authorizer": {
+                  "type": "COGNITO_USER_POOLS",
+                  "managedExternally": false,
+                  "authorizerId": "i7pzyk",
+                  "resultTtlInSeconds": 300,
+                  "identitySource": "method.request.header.Authorization",
+                  "claims": []
+                },
                 "integration": "AWS_PROXY"
               }
             }
@@ -1473,7 +1480,7 @@
           "timeout": 10,
           "runtime": "python3.10",
           "vpc": {},
-          "versionLogicalId": "DeleteMovieLambdaVersionV3yyD8WlEyEtboRR9SFTLpJILCO8MM9YRE6v0Ccd88I"
+          "versionLogicalId": "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g"
         }
       },
       "resources": {
@@ -1586,7 +1593,7 @@
         "Outputs": {}
       }
     },
-    "serviceRawFile": "service: movies-service\r\nframeworkVersion: '4'\r\n\r\nplugins:\r\n  - serverless-python-requirements\r\n\r\npackage:\r\n  exclude:\r\n    - node_modules/**\r\n    - .idea/**\r\n    - .requirements/**\r\n    - env/**\r\n    - README.md\r\n    - package.json\r\n    - package-lock.json\r\n    - requirements.txt\r\n\r\n# Global configuration\r\nprovider:\r\n  name: aws\r\n  runtime: python3.10\r\n  stage: dev\r\n  region: eu-central-1\r\n  memorySize: 128\r\n  timeout: 10\r\n  environment:\r\n    TABLE_NAME: Movies\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - dynamodb:DescribeTable\r\n        - dynamodb:Query\r\n        - dynamodb:Scan\r\n        - dynamodb:GetItem\r\n        - dynamodb:PutItem\r\n        - dynamodb:UpdateItem\r\n        - dynamodb:DeleteItem\r\n      Resource:\r\n        - \"Fn::GetAtt\": [MoviesTable, Arn]\r\n\r\n# Lambda functions\r\nfunctions:\r\n  createMovie:\r\n    handler: createMovie/create_movie.create\r\n    package:\r\n      include: 'createMovie/**'\r\n    events:\r\n      - http:\r\n          path: movies\r\n          method: post\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n\r\n  getMovies:\r\n    handler: getMovies/get_movies.get_all\r\n    package:\r\n      include: 'getMovies/**'\r\n    events:\r\n      - http:\r\n          path: movies\r\n          method: get\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n\r\n  getMovie:\r\n    handler: getMovie/get_movie.get_one\r\n    package:\r\n      include: 'getMovie/**'\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: get\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n\r\n  updateMovie:\r\n    handler: updateMovie/update_movie.update\r\n    package:\r\n      include: 'updateMovie/**'\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: put\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n\r\n  deleteMovie:\r\n    handler: deleteMovie/delete_movie.delete\r\n    package:\r\n      include: 'deleteMovie/**'\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: delete\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n\r\n# Additional resources (S3 storage, DynamoDB tables,...)\r\n# Written in CloudFormation template syntax\r\nresources:\r\n  Resources:\r\n    MoviesTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: Movies\r\n        AttributeDefinitions:\r\n          - AttributeName: id\r\n            AttributeType: N\r\n          - AttributeName: title\r\n            AttributeType: S\r\n          - AttributeName: genres\r\n            AttributeType: S\r\n          - AttributeName: actors\r\n            AttributeType: S\r\n          - AttributeName: directors\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: id\r\n            KeyType: HASH\r\n        ProvisionedThroughput:\r\n          ReadCapacityUnits: 5\r\n          WriteCapacityUnits: 5\r\n        GlobalSecondaryIndexes:\r\n          - IndexName: TitleIndex\r\n            KeySchema:\r\n              - AttributeName: title\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: GenresIndex\r\n            KeySchema:\r\n              - AttributeName: genres\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: ActorsIndex\r\n            KeySchema:\r\n              - AttributeName: actors\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: DirectorsIndex\r\n            KeySchema:\r\n              - AttributeName: directors\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n",
+    "serviceRawFile": "service: movies-service\r\nframeworkVersion: '4'\r\n\r\nplugins:\r\n  - serverless-python-requirements\r\n\r\ncustom:\r\n  variables: ${file(serverless.env.yml)}\r\n\r\npackage:\r\n  exclude:\r\n    - node_modules/**\r\n    - .idea/**\r\n    - .requirements/**\r\n    - env/**\r\n    - README.md\r\n    - package.json\r\n    - package-lock.json\r\n    - requirements.txt\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: python3.10\r\n  stage: dev\r\n  region: eu-central-1\r\n  memorySize: 128\r\n  timeout: 10\r\n  environment:\r\n    TABLE_NAME: Movies\r\n  apiGateway:\r\n    restApiId: ${self:custom.variables.restApiId}\r\n    restApiRootResourceId: ${self:custom.variables.restApiRootResourceId}\r\n\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - dynamodb:DescribeTable\r\n        - dynamodb:Query\r\n        - dynamodb:Scan\r\n        - dynamodb:GetItem\r\n        - dynamodb:PutItem\r\n        - dynamodb:UpdateItem\r\n        - dynamodb:DeleteItem\r\n      Resource:\r\n        - \"Fn::GetAtt\": [MoviesTable, Arn]\r\n\r\nfunctions:\r\n  createMovie:\r\n    handler: createMovie/create_movie.create\r\n    package:\r\n      include:\r\n        - createMovie/**\r\n    events:\r\n      - http:\r\n          path: movies\r\n          method: post\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n          authorizer:\r\n            type: COGNITO_USER_POOLS\r\n            authorizerId: ${self:custom.variables.authorizerId}\r\n\r\n  getMovies:\r\n    handler: getMovies/get_movies.get_all\r\n    package:\r\n      include:\r\n        - getMovies/**\r\n    events:\r\n      - http:\r\n          path: movies\r\n          method: get\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n          authorizer:\r\n            type: COGNITO_USER_POOLS\r\n            authorizerId: ${self:custom.variables.authorizerId}\r\n\r\n  getMovie:\r\n    handler: getMovie/get_movie.get_one\r\n    package:\r\n      include:\r\n        - getMovie/**\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: get\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n          authorizer:\r\n            type: COGNITO_USER_POOLS\r\n            authorizerId: ${self:custom.variables.authorizerId}\r\n\r\n  updateMovie:\r\n    handler: updateMovie/update_movie.update\r\n    package:\r\n      include:\r\n        - updateMovie/**\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: put\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n          authorizer:\r\n            type: COGNITO_USER_POOLS\r\n            authorizerId: ${self:custom.variables.authorizerId}\r\n\r\n  deleteMovie:\r\n    handler: deleteMovie/delete_movie.delete\r\n    package:\r\n      include:\r\n        - deleteMovie/**\r\n    events:\r\n      - http:\r\n          path: movies/{id}\r\n          method: delete\r\n          cors:\r\n            origins:\r\n              - '*'\r\n            headers:\r\n              - Authorization\r\n          authorizer:\r\n            type: COGNITO_USER_POOLS\r\n            authorizerId: ${self:custom.variables.authorizerId}\r\n\r\nresources:\r\n  Resources:\r\n    MoviesTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: Movies\r\n        AttributeDefinitions:\r\n          - AttributeName: id\r\n            AttributeType: N\r\n          - AttributeName: title\r\n            AttributeType: S\r\n          - AttributeName: genres\r\n            AttributeType: S\r\n          - AttributeName: actors\r\n            AttributeType: S\r\n          - AttributeName: directors\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: id\r\n            KeyType: HASH\r\n        ProvisionedThroughput:\r\n          ReadCapacityUnits: 5\r\n          WriteCapacityUnits: 5\r\n        GlobalSecondaryIndexes:\r\n          - IndexName: TitleIndex\r\n            KeySchema:\r\n              - AttributeName: title\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: GenresIndex\r\n            KeySchema:\r\n              - AttributeName: genres\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: ActorsIndex\r\n            KeySchema:\r\n              - AttributeName: actors\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n          - IndexName: DirectorsIndex\r\n            KeySchema:\r\n              - AttributeName: directors\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n            ProvisionedThroughput:\r\n              ReadCapacityUnits: 5\r\n              WriteCapacityUnits: 5\r\n",
     "command": [
       "deploy"
     ],
@@ -1611,52 +1618,52 @@
     "userEmail": "ilija.beslin@gmail.com",
     "serviceProviderAwsCredentials": "<REDACTED>",
     "serviceProviderAwsAccountId": "905418275187",
-    "versionSf": "4.0.30",
+    "versionSf": "4.0.33",
     "serviceProviderAwsCfStackName": "movies-service-dev",
-    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:eu-central-1:905418275187:stack/movies-service-dev/43daa8b0-1cd5-11ef-b54a-064b3d96829d",
-    "serviceProviderAwsCfStackCreated": "2024-05-28T09:32:56.450Z",
-    "serviceProviderAwsCfStackUpdated": "2024-05-28T09:52:51.277Z",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:eu-central-1:905418275187:stack/movies-service-dev/b459de20-1f83-11ef-8ef5-0abf64c81e15",
+    "serviceProviderAwsCfStackCreated": "2024-05-31T19:26:39.953Z",
+    "serviceProviderAwsCfStackUpdated": "2024-05-31T19:58:31.386Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
         "OutputKey": "UpdateMovieLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-updateMovie:11",
+        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-updateMovie:19",
         "Description": "Current Lambda function version",
         "ExportName": "sls-movies-service-dev-UpdateMovieLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetMovieLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-getMovie:11",
+        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-getMovie:18",
         "Description": "Current Lambda function version",
         "ExportName": "sls-movies-service-dev-GetMovieLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "GetMoviesLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-getMovies:9",
+        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-getMovies:15",
         "Description": "Current Lambda function version",
         "ExportName": "sls-movies-service-dev-GetMoviesLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "DeleteMovieLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-deleteMovie:9",
+        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-deleteMovie:17",
         "Description": "Current Lambda function version",
         "ExportName": "sls-movies-service-dev-DeleteMovieLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "CreateMovieLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-createMovie:9",
+        "OutputValue": "arn:aws:lambda:eu-central-1:905418275187:function:movies-service-dev-createMovie:17",
         "Description": "Current Lambda function version",
         "ExportName": "sls-movies-service-dev-CreateMovieLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "ServiceEndpoint",
-        "OutputValue": "https://plu5bzzmz4.execute-api.eu-central-1.amazonaws.com/dev",
+        "OutputValue": "https://jcmn0kq6wj.execute-api.eu-central-1.amazonaws.com/dev",
         "Description": "URL of the service endpoint",
         "ExportName": "sls-movies-service-dev-ServiceEndpoint"
       },
       {
         "OutputKey": "ServerlessDeploymentBucketName",
-        "OutputValue": "movies-service-dev-serverlessdeploymentbucket-txgpiwspktf1",
+        "OutputValue": "movies-service-dev-serverlessdeploymentbucket-o9bd5ipyqlu7",
         "ExportName": "sls-movies-service-dev-ServerlessDeploymentBucketName"
       }
     ]

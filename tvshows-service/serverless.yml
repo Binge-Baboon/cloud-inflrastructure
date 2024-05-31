@@ -4,6 +4,9 @@ frameworkVersion: '4'
 plugins:
   - serverless-python-requirements
 
+custom:
+  variables: ${file(serverless.env.yml)}
+
 package:
   exclude:
     - node_modules/**
@@ -25,8 +28,8 @@ provider:
   environment:
     TABLE_NAME: TVShows
   apiGateway:
-    restApiId: vfp2xouxd0
-    restApiRootResourceId: qjd7vnhlo6
+    restApiId: ${self:custom.variables.restApiId}
+    restApiRootResourceId: ${self:custom.variables.restApiRootResourceId}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -55,6 +58,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getTVShows:
     handler: getTVShows/get_tvshows.get_all
@@ -70,6 +76,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getTVShow:
     handler: getTVShow/get_tvshow.get_one
@@ -85,6 +94,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   updateTVShow:
     handler: updateTVShow/update_tvshow.update
@@ -100,6 +112,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   deleteTVShow:
     handler: deleteTVShow/delete_tvshow.delete
@@ -115,6 +130,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
 resources:
   Resources:

@@ -4,6 +4,9 @@ frameworkVersion: '4'
 plugins:
   - serverless-python-requirements
 
+custom:
+  variables: ${file(serverless.env.yml)}
+
 package:
   exclude:
     - node_modules/**
@@ -26,8 +29,8 @@ provider:
   environment:
     TABLE_NAME: Episodes
   apiGateway:
-    restApiId: vfp2xouxd0
-    restApiRootResourceId: qjd7vnhlo6
+    restApiId: ${self:custom.variables.restApiId}
+    restApiRootResourceId: ${self:custom.variables.restApiRootResourceId}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -56,6 +59,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getEpisodes:
     handler: getEpisodes/get_episodes.get_all
@@ -70,6 +76,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getEpisode:
     handler: getEpisode/get_episode.get_one
@@ -84,9 +93,12 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   updateEpisode:
-    handler: updateEpisode/update_episode.py.update
+    handler: updateEpisode/update_episode.update
     package:
       include: 'updateEpisode/**'
     events:
@@ -98,6 +110,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   deleteEpisode:
     handler: deleteEpisode/delete_episode.delete
@@ -112,6 +127,9 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
 # Additional resources (S3 storage, DynamoDB tables,...)
 # Written in CloudFormation template syntax
@@ -197,5 +215,3 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 5
               WriteCapacityUnits: 5
-
-

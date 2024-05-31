@@ -4,6 +4,9 @@ frameworkVersion: '4'
 plugins:
   - serverless-python-requirements
 
+custom:
+  variables: ${file(serverless.env.yml)}
+
 package:
   exclude:
     - node_modules/**
@@ -15,7 +18,6 @@ package:
     - package-lock.json
     - requirements.txt
 
-# Global configuration
 provider:
   name: aws
   runtime: python3.10
@@ -26,8 +28,9 @@ provider:
   environment:
     TABLE_NAME: Movies
   apiGateway:
-    restApiId: vfp2xouxd0
-    restApiRootResourceId: qjd7vnhlo6
+    restApiId: ${self:custom.variables.restApiId}
+    restApiRootResourceId: ${self:custom.variables.restApiRootResourceId}
+
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -41,12 +44,12 @@ provider:
       Resource:
         - "Fn::GetAtt": [MoviesTable, Arn]
 
-# Lambda functions
 functions:
   createMovie:
     handler: createMovie/create_movie.create
     package:
-      include: 'createMovie/**'
+      include:
+        - createMovie/**
     events:
       - http:
           path: movies
@@ -56,11 +59,15 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getMovies:
     handler: getMovies/get_movies.get_all
     package:
-      include: 'getMovies/**'
+      include:
+        - getMovies/**
     events:
       - http:
           path: movies
@@ -70,11 +77,15 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   getMovie:
     handler: getMovie/get_movie.get_one
     package:
-      include: 'getMovie/**'
+      include:
+        - getMovie/**
     events:
       - http:
           path: movies/{id}
@@ -84,11 +95,15 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   updateMovie:
     handler: updateMovie/update_movie.update
     package:
-      include: 'updateMovie/**'
+      include:
+        - updateMovie/**
     events:
       - http:
           path: movies/{id}
@@ -98,11 +113,15 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
   deleteMovie:
     handler: deleteMovie/delete_movie.delete
     package:
-      include: 'deleteMovie/**'
+      include:
+        - deleteMovie/**
     events:
       - http:
           path: movies/{id}
@@ -112,9 +131,10 @@ functions:
               - '*'
             headers:
               - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
 
-# Additional resources (S3 storage, DynamoDB tables,...)
-# Written in CloudFormation template syntax
 resources:
   Resources:
     MoviesTable:
