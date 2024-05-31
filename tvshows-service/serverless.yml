@@ -155,6 +155,8 @@ resources:
             AttributeType: S
           - AttributeName: rating
             AttributeType: N
+          - AttributeName: image_key
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -210,6 +212,15 @@ resources:
           - IndexName: DirectorsIndex
             KeySchema:
               - AttributeName: directors
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: ImageKeyIndex
+            KeySchema:
+              - AttributeName: image_key
                 KeyType: HASH
             Projection:
               ProjectionType: ALL

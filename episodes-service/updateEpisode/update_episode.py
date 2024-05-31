@@ -38,6 +38,10 @@ def update(event, context):
         update_expression += "video_id = :video_id, "
         expression_attribute_values[':video_id'] = data['video_id']
 
+    if 'image_key' in data:
+        update_expression += "image_key = :image_key, "
+        expression_attribute_values[':image_key'] = data['image_key']
+
     update_expression = update_expression.rstrip(', ')
 
     try:

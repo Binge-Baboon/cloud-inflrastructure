@@ -14,6 +14,7 @@ def create(event, context):
     genres = data['genres']
     actors = data['actors']
     directors = data['directors']
+    image_key = data['image_key']
 
     try:
         table.put_item(
@@ -22,7 +23,8 @@ def create(event, context):
                 'title': title,
                 'genres': genres,
                 'actors': actors,
-                'directors': directors
+                'directors': directors,
+                'image_key': image_key
             }
         )
         return create_response(201, {'message': 'Movie created successfully!'})

@@ -16,6 +16,7 @@ def create(event, context):
     episode = data['episode']
     tvshow_id = data['tvshow_id']
     video_id = data['video_id']
+    image_key = data['image_key']
 
     try:
         table.put_item(
@@ -26,7 +27,8 @@ def create(event, context):
                 'season': season,
                 'episode': episode,
                 'tvshow_id': tvshow_id,
-                'video_id': video_id
+                'video_id': video_id,
+                'image_key':image_key
             }
         )
         return create_response(201, {'message': 'Episode created successfully!'})

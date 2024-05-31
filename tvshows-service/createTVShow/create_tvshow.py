@@ -16,6 +16,7 @@ def create(event, context):
     actors = data['actors']
     directors = data['directors']
     rating = data['rating']
+    image_key = data['image_key']
 
     try:
         table.put_item(
@@ -26,7 +27,8 @@ def create(event, context):
                 'genres': genres,
                 'actors': actors,
                 'directors': directors,
-                'rating':rating
+                'rating': rating,
+                'image_key': image_key
             }
         )
         return create_response(201, {'message': 'TVShow created successfully!'})

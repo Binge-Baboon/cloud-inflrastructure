@@ -154,6 +154,8 @@ resources:
             AttributeType: N
           - AttributeName: video_id
             AttributeType: N
+          - AttributeName: image_key
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -209,6 +211,15 @@ resources:
           - IndexName: EpisodeIndex
             KeySchema:
               - AttributeName: episode
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: ImageKeyIndex
+            KeySchema:
+              - AttributeName: image_key
                 KeyType: HASH
             Projection:
               ProjectionType: ALL

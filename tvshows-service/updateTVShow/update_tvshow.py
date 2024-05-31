@@ -38,6 +38,10 @@ def update(event, context):
         update_expression += "rating = :rating, "
         expression_attribute_values[':rating'] = data['rating']
 
+    if 'image_key' in data:
+        update_expression += "image_key = :image_key, "
+        expression_attribute_values[':image_key'] = data['image_key']
+
     update_expression = update_expression.rstrip(', ')
 
     try:
