@@ -1,0 +1,38 @@
+service: api-gateway
+
+frameworkVersion: '4'
+
+package:
+  exclude:
+    - node_modules/**
+    - .idea/**
+    - .requirements/**
+    - env/**
+    - README.md
+    - package.json
+    - package-lock.json
+    - requirements.txt
+
+
+provider:
+  name: aws
+  runtime: python3.10
+  stage: dev
+  region: eu-central-1
+  memorySize: 128
+  timeout: 10
+
+functions:
+  hello:
+    handler: api-gateway/handler.hello
+    package:
+      include: 'hello/**'
+    events:
+      - http:
+          path: hello
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization

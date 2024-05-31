@@ -24,6 +24,9 @@ provider:
   timeout: 10
   environment:
     TABLE_NAME: TVShows
+  apiGateway:
+    restApiId: vfp2xouxd0
+    restApiRootResourceId: qjd7vnhlo6
   iamRoleStatements:
     - Effect: Allow
       Action:
