@@ -178,6 +178,14 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
+                  "Resource": "arn:aws:s3:::binge-baboon-images/*"
                 }
               ]
             }
@@ -206,7 +214,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717348179590-2024-06-02T17:09:39.590Z/movies-service.zip"
         },
         "Handler": "createMovie/create_movie.create",
         "Runtime": "python3.10",
@@ -236,7 +244,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717348179590-2024-06-02T17:09:39.590Z/movies-service.zip"
         },
         "Handler": "getMovies/get_movies.get_all",
         "Runtime": "python3.10",
@@ -266,7 +274,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717348179590-2024-06-02T17:09:39.590Z/movies-service.zip"
         },
         "Handler": "getMovie/get_movie.get_one",
         "Runtime": "python3.10",
@@ -296,7 +304,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717348179590-2024-06-02T17:09:39.590Z/movies-service.zip"
         },
         "Handler": "updateMovie/update_movie.update",
         "Runtime": "python3.10",
@@ -326,7 +334,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/movies-service/dev/1717185495812-2024-05-31T19:58:15.812Z/movies-service.zip"
+          "S3Key": "serverless/movies-service/dev/1717348179590-2024-06-02T17:09:39.590Z/movies-service.zip"
         },
         "Handler": "deleteMovie/delete_movie.delete",
         "Runtime": "python3.10",
@@ -349,54 +357,54 @@
         "DeleteMovieLogGroup"
       ]
     },
-    "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc": {
+    "CreateMovieLambdaVersionru8VNrzQC60LFgxGbMfE9tQ8DrC91fNiD9AMc8Q4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateMovieLambdaFunction"
         },
-        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
+        "CodeSha256": "UqUVTOqtcinkGvKS5kKC1Lbb07sGRNjHONG9d5cfo0w="
       }
     },
-    "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA": {
+    "GetMoviesLambdaVersionSz6SUiebaUb8s32f1gZDgY2U9GAXTb9j7n5oFZuFiY": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetMoviesLambdaFunction"
         },
-        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
+        "CodeSha256": "UqUVTOqtcinkGvKS5kKC1Lbb07sGRNjHONG9d5cfo0w="
       }
     },
-    "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM": {
+    "GetMovieLambdaVersion2VqeaUz3NTIIyERP8akeRaVWEmfU2KB00Dm7zWUSfgE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetMovieLambdaFunction"
         },
-        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
+        "CodeSha256": "UqUVTOqtcinkGvKS5kKC1Lbb07sGRNjHONG9d5cfo0w="
       }
     },
-    "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE": {
+    "UpdateMovieLambdaVersion5HwzfJertijpMTyZBNSeTjJaL2OaRdV6V2vQ8vNipM4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "UpdateMovieLambdaFunction"
         },
-        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
+        "CodeSha256": "UqUVTOqtcinkGvKS5kKC1Lbb07sGRNjHONG9d5cfo0w="
       }
     },
-    "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g": {
+    "DeleteMovieLambdaVersionFC2BDn4wsH96q3mE6lLDlzzKHUlxCgZO6wHCNiA1H4g": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "DeleteMovieLambdaFunction"
         },
-        "CodeSha256": "6fkYQ9g8vCxTXAxih+0HiajBFUOHX04T1MqXgS0Gqqc="
+        "CodeSha256": "UqUVTOqtcinkGvKS5kKC1Lbb07sGRNjHONG9d5cfo0w="
       }
     },
     "ApiGatewayResourceMovies": {
@@ -728,7 +736,7 @@
         "DeleteMovieLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1717185494902": {
+    "ApiGatewayDeployment1717348178616": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": "jcmn0kq6wj",
@@ -943,6 +951,10 @@
           {
             "AttributeName": "directors",
             "AttributeType": "S"
+          },
+          {
+            "AttributeName": "image_key",
+            "AttributeType": "S"
           }
         ],
         "KeySchema": [
@@ -1019,6 +1031,22 @@
               "ReadCapacityUnits": 5,
               "WriteCapacityUnits": 5
             }
+          },
+          {
+            "IndexName": "ImageKeyIndex",
+            "KeySchema": [
+              {
+                "AttributeName": "image_key",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
           }
         ]
       }
@@ -1036,7 +1064,7 @@
     "CreateMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateMovieLambdaVersionRj8AGJVarjZpFMQqKHNhR3hQInW4QcKD2DjJUI4mRc"
+        "Ref": "CreateMovieLambdaVersionru8VNrzQC60LFgxGbMfE9tQ8DrC91fNiD9AMc8Q4"
       },
       "Export": {
         "Name": "sls-movies-service-dev-CreateMovieLambdaFunctionQualifiedArn"
@@ -1045,7 +1073,7 @@
     "GetMoviesLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetMoviesLambdaVersionnAORVOnzOSH3ifBlA29OmDItfxRR7cwmyWO90gUA"
+        "Ref": "GetMoviesLambdaVersionSz6SUiebaUb8s32f1gZDgY2U9GAXTb9j7n5oFZuFiY"
       },
       "Export": {
         "Name": "sls-movies-service-dev-GetMoviesLambdaFunctionQualifiedArn"
@@ -1054,7 +1082,7 @@
     "GetMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetMovieLambdaVersionWUNJSJmsNpBZvrxagEKIdlyUm20C3StUMAjnKUswzM"
+        "Ref": "GetMovieLambdaVersion2VqeaUz3NTIIyERP8akeRaVWEmfU2KB00Dm7zWUSfgE"
       },
       "Export": {
         "Name": "sls-movies-service-dev-GetMovieLambdaFunctionQualifiedArn"
@@ -1063,7 +1091,7 @@
     "UpdateMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "UpdateMovieLambdaVersionNXK0mrlqHRbRSJddg8FQodl4kG2RutzuiqxgEFmE"
+        "Ref": "UpdateMovieLambdaVersion5HwzfJertijpMTyZBNSeTjJaL2OaRdV6V2vQ8vNipM4"
       },
       "Export": {
         "Name": "sls-movies-service-dev-UpdateMovieLambdaFunctionQualifiedArn"
@@ -1072,7 +1100,7 @@
     "DeleteMovieLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "DeleteMovieLambdaVersion9meIbPxFbbkB2k7P4H5yZK1qmeTfQkVrTFJoOUQ9g"
+        "Ref": "DeleteMovieLambdaVersionFC2BDn4wsH96q3mE6lLDlzzKHUlxCgZO6wHCNiA1H4g"
       },
       "Export": {
         "Name": "sls-movies-service-dev-DeleteMovieLambdaFunctionQualifiedArn"
