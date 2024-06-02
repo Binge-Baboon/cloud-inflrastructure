@@ -10,7 +10,7 @@ def get_one(event, context):
     s3 = boto3.client('s3')
 
     table = dynamodb.Table('Movies')
-    bucket_name = 'binge-baboon-images'  # replace with your S3 bucket name
+    bucket_name = 'binge-baboon-images'
 
     movie_id = event['pathParameters']['id']
     response = table.get_item(

@@ -9,7 +9,7 @@ def get_all(event, context):
     s3 = boto3.client('s3')
 
     table = dynamodb.Table('Movies')
-    bucket_name = 'binge-baboon-images'  # replace with your S3 bucket name
+    bucket_name = 'binge-baboon-images'
 
     response = table.scan()
     movies = response['Items']
