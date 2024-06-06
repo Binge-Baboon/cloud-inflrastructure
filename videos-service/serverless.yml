@@ -43,6 +43,13 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - "Fn::GetAtt": [VideosTable, Arn]
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - "arn:aws:s3:::binge-baboon-videos/*"
+
 
 # Lambda functions
 functions:
