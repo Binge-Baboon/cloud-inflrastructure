@@ -51,7 +51,7 @@ provider:
         - "arn:aws:s3:::binge-baboon-videos/*"
 
 
-# Lambda functions
+
 functions:
   createVideo:
     handler: createVideo/create_video.create
@@ -138,8 +138,23 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId: ${self:custom.variables.authorizerId}
 
-# Additional resources (S3 storage, DynamoDB tables,...)
-# Written in CloudFormation template syntax
+  downloadVideo:
+    handler: downloadVideo/download_video.download
+    package:
+      include: 'downloadVideo/**'
+    events:
+      - http:
+          path: videos/download/{id}
+          method: get
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Authorization
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.variables.authorizerId}
+
 resources:
   Resources:
     VideosTable:
@@ -149,65 +164,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: N
-          - AttributeName: size
-            AttributeType: N
-          - AttributeName: datatype
-            AttributeType: S
-          - AttributeName: modified
-            AttributeType: S
-          - AttributeName: created
-            AttributeType: S
-          - AttributeName: s3key
-            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-        - IndexName: SizeIndex
-          KeySchema:
-            - AttributeName: size
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-        - IndexName: DatatypeIndex
-          KeySchema:
-            - AttributeName: datatype
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-        - IndexName: ModifiedIndex
-          KeySchema:
-            - AttributeName: modified
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-        - IndexName: CreatedIndex
-          KeySchema:
-            - AttributeName: created
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-        - IndexName: S3keyIndex
-          KeySchema:
-            - AttributeName: s3key
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
