@@ -27,49 +27,14 @@ class MoviesServiceStack(Stack):
         # Create DynamoDB Table
         movies_table = dynamodb.Table(self, "MoviesTable",
             table_name="Movies",
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.NUMBER),
+            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1,
             removal_policy=RemovalPolicy.DESTROY
         )
 
-        # Add Global Secondary Indexes
-        movies_table.add_global_secondary_index(
-            index_name="TitleIndex",
-            partition_key=dynamodb.Attribute(name="title", type=dynamodb.AttributeType.STRING),
-            projection_type=dynamodb.ProjectionType.ALL,
-            read_capacity=1,
-            write_capacity=1
-        )
-        movies_table.add_global_secondary_index(
-            index_name="GenresIndex",
-            partition_key=dynamodb.Attribute(name="genres", type=dynamodb.AttributeType.STRING),
-            projection_type=dynamodb.ProjectionType.ALL,
-            read_capacity=1,
-            write_capacity=1
-        )
-        movies_table.add_global_secondary_index(
-            index_name="ActorsIndex",
-            partition_key=dynamodb.Attribute(name="actors", type=dynamodb.AttributeType.STRING),
-            projection_type=dynamodb.ProjectionType.ALL,
-            read_capacity=1,
-            write_capacity=1
-        )
-        movies_table.add_global_secondary_index(
-            index_name="DirectorsIndex",
-            partition_key=dynamodb.Attribute(name="directors", type=dynamodb.AttributeType.STRING),
-            projection_type=dynamodb.ProjectionType.ALL,
-            read_capacity=1,
-            write_capacity=1
-        )
-        movies_table.add_global_secondary_index(
-            index_name="ImageKeyIndex",
-            partition_key=dynamodb.Attribute(name="image_key", type=dynamodb.AttributeType.STRING),
-            projection_type=dynamodb.ProjectionType.ALL,
-            read_capacity=1,
-            write_capacity=1
-        )
+
 
         # Create Lambda functions
         lambda_env = {
