@@ -2,7 +2,7 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-# from shared.utils import create_response
+from shared.utils import create_response
 
 def update(event, context):
     dynamodb = boto3.resource('dynamodb')
@@ -48,14 +48,3 @@ def update(event, context):
 
     except ClientError as e:
         create_response(e.response['ResponseMetadata']['HTTPStatusCode'], e.response['Error']['Message'])
-
-def create_response(status, body):
-    return {
-        'statusCode': status,
-        'headers': {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        },
-        'body': json.dumps(body, default=str)
-    }

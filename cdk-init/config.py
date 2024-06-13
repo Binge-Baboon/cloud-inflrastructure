@@ -1,0 +1,3 @@
+REST_API_ID = "meiy268mn2"
+REST_API_ROOT_RESOURCE_ID = "hduvnihl0h"
+AUTHORIZER_ID = "l9vgbw"

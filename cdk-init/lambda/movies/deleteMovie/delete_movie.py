@@ -18,4 +18,3 @@ def delete(event, context):
         return create_response(200, {'message': f'Movie with ID {movie_id} deleted successfully'})
     except ClientError as e:
         return create_response(e.response['ResponseMetadata']['HTTPStatusCode'], e.response['Error']['Message'])
-
