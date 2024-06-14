@@ -6,10 +6,10 @@ def get_one(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Users')
 
-    username = event['pathParameters']['username']
+    email = event['pathParameters']['email']
     response = table.get_item(
         Key={
-            'username': username
+            'email': email
         }
     )
 

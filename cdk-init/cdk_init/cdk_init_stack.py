@@ -55,7 +55,7 @@ class BingeBaboonServiceStack(Stack):
             rest_api_name="BingeBaboonService",
             default_cors_preflight_options={
                 "allow_origins": apigateway.Cors.ALL_ORIGINS,
-                "allow_headers": ["Authorization"]
+                "allow_headers": ["Authorization", "Content-Type"]
             }
         )
 

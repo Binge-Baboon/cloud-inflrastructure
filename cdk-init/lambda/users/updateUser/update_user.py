@@ -7,7 +7,7 @@ def update(event, context):
     table = dynamodb.Table('Users')
 
     body = json.loads(event['body'])
-    username = event['pathParameters']['username']
+    email = event['pathParameters']['email']
 
     update_expression = "set "
     expression_attribute_values = {}
@@ -20,7 +20,7 @@ def update(event, context):
 
     response = table.update_item(
         Key={
-            'username': username
+            'email': email
         },
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,

@@ -27,7 +27,7 @@ class UsersServiceStack(Stack):
         # Create DynamoDB Table
         users_table = dynamodb.Table(self, "UsersTable",
             table_name="Users",
-            partition_key=dynamodb.Attribute(name="username", type=dynamodb.AttributeType.STRING),
+            partition_key=dynamodb.Attribute(name="email", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1,

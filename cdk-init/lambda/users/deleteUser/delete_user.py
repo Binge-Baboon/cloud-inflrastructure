@@ -6,12 +6,12 @@ def delete(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Users')
 
-    username = event['pathParameters']['username']
+    email = event['pathParameters']['email']
 
     response = table.delete_item(
         Key={
-            'username': username
+            'email': email
         }
     )
 
-    return create_response(200, {'message': 'User with username ' + username + ' deleted successfully'})
+    return create_response(200, {'message': 'User with email ' + email + ' deleted successfully'})

@@ -11,7 +11,6 @@ def create(event, context):
 
 
     item = {
-        'username': body.get('username'),
         'email': body.get('email'),
         'firstName': body.get('firstName'),
         'lastName': body.get('lastName'),
@@ -23,4 +22,4 @@ def create(event, context):
     }
 
     table.put_item(Item=item)
-    return create_response(201, {'message': 'User created successfully', 'username': body.get('username')})
+    return create_response(201, {'message': 'User created successfully', 'email': body.get('email')})
