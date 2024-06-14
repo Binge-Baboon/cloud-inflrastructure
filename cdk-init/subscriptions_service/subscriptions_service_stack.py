@@ -24,7 +24,7 @@ class SubscriptionsServiceStack(Stack):
 
 
         # Create DynamoDB Table
-        genres_table = dynamodb.Table(self, "GenresTable",
+        self.genres_table = dynamodb.Table(self, "GenresTable",
             table_name="Genres",
             partition_key=dynamodb.Attribute(name="genre", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
@@ -33,7 +33,7 @@ class SubscriptionsServiceStack(Stack):
             removal_policy=RemovalPolicy.DESTROY
         )
 
-        actors_table = dynamodb.Table(self, "ActorsTable",
+        self.actors_table = dynamodb.Table(self, "ActorsTable",
             table_name="Actors",
             partition_key=dynamodb.Attribute(name="name", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
@@ -42,7 +42,7 @@ class SubscriptionsServiceStack(Stack):
             removal_policy=RemovalPolicy.DESTROY
         )
 
-        directors_table = dynamodb.Table(self, "DirectorsTable",
+        self.directors_table = dynamodb.Table(self, "DirectorsTable",
             table_name="Directors",
             partition_key=dynamodb.Attribute(name="name", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
@@ -55,15 +55,15 @@ class SubscriptionsServiceStack(Stack):
 
         # Create Lambda functions
         genres_lambda_env = {
-            "TABLE_NAME": genres_table.table_name
+            "TABLE_NAME": self.genres_table.table_name
         }
 
         actors_lambda_env = {
-            "TABLE_NAME": actors_table.table_name
+            "TABLE_NAME": self.actors_table.table_name
         }
 
         directors_lambda_env = {
-            "TABLE_NAME": directors_table.table_name
+            "TABLE_NAME": self.directors_table.table_name
         }
 
         create_genre_lambda = _lambda.Function(self, "CreateGenreFunction",
@@ -173,20 +173,20 @@ class SubscriptionsServiceStack(Stack):
 
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
-        genres_table.grant_read_write_data(create_genre_lambda)
-        genres_table.grant_read_write_data(get_genres_lambda)
-        genres_table.grant_read_write_data(get_genre_lambda)
-        genres_table.grant_read_write_data(delete_genre_lambda)
+        self.genres_table.grant_read_write_data(create_genre_lambda)
+        self.genres_table.grant_read_write_data(get_genres_lambda)
+        self.genres_table.grant_read_write_data(get_genre_lambda)
+        self.genres_table.grant_read_write_data(delete_genre_lambda)
 
-        actors_table.grant_read_write_data(create_actor_lambda)
-        actors_table.grant_read_write_data(get_actors_lambda)
-        actors_table.grant_read_write_data(get_actor_lambda)
-        actors_table.grant_read_write_data(delete_actor_lambda)
+        self.actors_table.grant_read_write_data(create_actor_lambda)
+        self.actors_table.grant_read_write_data(get_actors_lambda)
+        self.actors_table.grant_read_write_data(get_actor_lambda)
+        self.actors_table.grant_read_write_data(delete_actor_lambda)
 
-        directors_table.grant_read_write_data(create_director_lambda)
-        directors_table.grant_read_write_data(get_directors_lambda)
-        directors_table.grant_read_write_data(get_director_lambda)
-        directors_table.grant_read_write_data(delete_director_lambda)
+        self.directors_table.grant_read_write_data(create_director_lambda)
+        self.directors_table.grant_read_write_data(get_directors_lambda)
+        self.directors_table.grant_read_write_data(get_director_lambda)
+        self.directors_table.grant_read_write_data(delete_director_lambda)
 
         # Create API Gateway resources and methods
         genres_resource = api.root.add_resource("genres")

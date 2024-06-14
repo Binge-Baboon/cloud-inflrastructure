@@ -1,7 +1,6 @@
 import json
 import boto3
 from shared.utils import create_response
-
 def get_one(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Movies')

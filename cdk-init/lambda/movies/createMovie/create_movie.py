@@ -15,6 +15,7 @@ def create(event, context):
         'title': body.get('title'),
         'description': body.get('description'),
         'rating': body.get('rating'),
+        'genres': body.get('genres'),
         'actors': body.get('actors'),
         'directors': body.get('directors'),
         'metadata': body.get('metadata')

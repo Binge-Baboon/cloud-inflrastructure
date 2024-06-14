@@ -11,14 +11,16 @@ from config import REST_API_ID, REST_API_ROOT_RESOURCE_ID, AUTHORIZER_ID
 
 app = cdk.App()
 init_stack = BingeBaboonServiceStack(app, "BingeBaboonServiceStack")
+subscriptions_stack = SubscriptionsServiceStack(app, 'SubscriptionServiceStack',
+    init_stack= init_stack
+)
 MoviesServiceStack(app, "MoviesServiceStack",
-    init_stack = init_stack
+    init_stack = init_stack,
+    subscriptions_stack = subscriptions_stack
 )
 UsersServiceStack(app, "UserServiceStack",
     init_stack = init_stack
 )
-SubscriptionsServiceStack(app, 'SubscriptionServiceStack',
-    init_stack= init_stack
-)
+
 
 app.synth()

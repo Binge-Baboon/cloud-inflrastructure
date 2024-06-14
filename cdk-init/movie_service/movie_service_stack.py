@@ -3,6 +3,7 @@ from aws_cdk import (
     aws_apigateway as apigateway,
     aws_cognito as cognito,
     aws_dynamodb as dynamodb,
+    aws_lambda_event_sources as lambda_event_sources,
     Duration,
     Stack,
     CfnOutput,
@@ -12,16 +13,19 @@ from aws_cdk import (
 from constructs import Construct
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
+from subscriptions_service.subscriptions_service_stack import SubscriptionsServiceStack
 
 
 class MoviesServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, subscriptions_stack: SubscriptionsServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
         user_pool = init_stack.user_pool
         authorizer = init_stack.authorizer
+
+
 
 
         # Create DynamoDB Table
@@ -31,7 +35,8 @@ class MoviesServiceStack(Stack):
             billing_mode=dynamodb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1,
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            stream = dynamodb.StreamViewType.NEW_IMAGE
         )
 
 
@@ -119,3 +124,26 @@ class MoviesServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
+
+
+        # Create Trigger Lambda function
+        update_subscriptions_lambda = _lambda.Function(self, "UpdateSubscriptionsFunction",
+                                                runtime=_lambda.Runtime.PYTHON_3_12,
+                                                handler="updateSubscriptions/update_subscriptions.handler",
+                                                code=_lambda.Code.from_asset("lambda/movies"),
+                                                memory_size=128,
+                                                timeout=Duration.seconds(10),
+                                                environment=lambda_env
+                                                )
+
+        #Permissions
+        subscriptions_stack.directors_table.grant_read_write_data(update_subscriptions_lambda)
+        subscriptions_stack.actors_table.grant_read_write_data(update_subscriptions_lambda)
+        subscriptions_stack.genres_table.grant_read_write_data(update_subscriptions_lambda)
+
+        movies_table.grant_stream_read(update_subscriptions_lambda)
+
+        # Create an event source mapping for the DynamoDB stream to the trigger Lambda
+        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(movies_table,
+                                                                                     starting_position=_lambda.StartingPosition.LATEST
+                                                                                     ))
