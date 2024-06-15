@@ -26,11 +26,11 @@ def handler(event, context):
                     'id': new_image['id']['S'],
                     'title': new_image['title']['S'],
                     'description': new_image['description']['S'],
-                    'rating': int(new_image['rating']['N']),
+                    'rating': new_image['rating']['M'],
                     'genres': [genre['S'] for genre in new_image['genres']['L']],
                     'actors': [actor['S'] for actor in new_image['actors']['L']],
                     'directors': [director['S'] for director in new_image['directors']['L']],
-                    'metadata': {k: v['M'] for k, v in new_image['metadata']['M'].items()}
+                    'metadata': new_image['metadata']['M']
                 }
             except KeyError as e:
                 logger.error('KeyError: %s', e)
