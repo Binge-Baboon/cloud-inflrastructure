@@ -161,7 +161,7 @@ class MoviesServiceStack(Stack):
         )
 
 
-        videos_resource = video_resource.add_resource("{id}")
+        videos_resource = video_resource.add_resource("upload")
 
         videos_resource.add_method("POST", apigateway.LambdaIntegration(upload_video_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
