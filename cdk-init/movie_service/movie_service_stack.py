@@ -9,7 +9,7 @@ from aws_cdk import (
     Stack,
     CfnOutput,
     Aws,
-    RemovalPolicy
+    RemovalPolicy,
 )
 from constructs import Construct
 
@@ -114,7 +114,8 @@ class MoviesServiceStack(Stack):
             code=_lambda.Code.from_asset("lambda/movies"),
             memory_size=128,
             timeout=Duration.seconds(10),
-            environment=lambda_env
+            environment=lambda_env,
+            layers=[_lambda.LayerVersion.from_layer_version_arn(self, 'Pillow', 'arn:aws:lambda:eu-central-1:770693421928:layer:Klayers-p312-Pillow:2')]
         )
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
