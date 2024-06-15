@@ -9,7 +9,8 @@ s3_client = boto3.client('s3')
 def resize(event, context):
     bucket = "binge-baboon"
     body = json.loads(event['body'])
-    key = "videos/" + body.get("id") + "/" + body.get("image_key")
+    movie_id = body.get("id")
+    key = "videos/" + movie_id + "/" + body.get("image_key")
 
     download_path = f'/tmp/{key}'
 
@@ -47,7 +48,7 @@ def resize(event, context):
     cap.release()
     out.release()
 
-    resized_key = f'{target_resolution[1]}.mp4'
+    resized_key = f'videos/{movie_id}/{target_resolution[1]}.mp4'
     s3_client.upload_file(output_path, bucket, resized_key)
 
-    return create_response(200,'Video resized and uploaded successfully!')
+    return create_response(200, 'Video resized and uploaded successfully!')
