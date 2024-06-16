@@ -8,7 +8,8 @@ from aws_cdk import (
     CfnOutput,
     Aws,
     aws_s3 as s3,
-    RemovalPolicy
+    RemovalPolicy,
+    aws_s3_notifications as s3_notifications,
 )
 from constructs import Construct
 
@@ -23,7 +24,7 @@ class MultimediaServiceStack(Stack):
         api = init_stack.api
         user_pool = init_stack.user_pool
         authorizer = init_stack.authorizer
-
+        movies_table = movies_stack.movies_table
 
         bucket_name = "binge-baboon"
         s3_bucket = s3.Bucket(self,
@@ -44,7 +45,8 @@ class MultimediaServiceStack(Stack):
                            )
 
         lambda_env = {
-            "BUCKET_NAME": bucket_name
+            "BUCKET_NAME": bucket_name,
+            "MOVIES_TABLE_NAME": movies_table.table_name
         }
 
         resize_video_lambda = _lambda.Function(self, "ResizeVideoFunction",
@@ -76,6 +78,18 @@ class MultimediaServiceStack(Stack):
                                                                                                    'arn:aws:lambda:eu-central-1:770693421928:layer:Klayers-p312-Pillow:2')]
                                                )
 
+        update_metadata_lambda = _lambda.Function(self, "UpdateMetadataFunction",
+                                                  runtime=_lambda.Runtime.PYTHON_3_12,
+                                                  handler="updateMetadata/update_metadata.handler",
+                                                  code=_lambda.Code.from_asset("lambda/multimedia"),
+                                                  memory_size=128,
+                                                  timeout=Duration.seconds(10),
+                                                  environment=lambda_env
+                                                  )
+
+        # Add the S3 event notification
+        notification = s3_notifications.LambdaDestination(update_metadata_lambda)
+        s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
         video_resource = api.root.add_resource("videos")
 
@@ -100,9 +114,10 @@ class MultimediaServiceStack(Stack):
                                   # api_key_required=True
                                   )
 
-
         # Grant Lambda functions permissions to interact with S3
         s3_bucket.grant_read_write(resize_video_lambda)
         s3_bucket.grant_read_write(upload_video_lambda)
         s3_bucket.grant_read_write(upload_image_lambda)
+        s3_bucket.grant_read_write(update_metadata_lambda)
 
+        movies_table.grant_read_write_data(update_metadata_lambda)

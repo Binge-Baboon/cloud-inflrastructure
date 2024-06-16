@@ -28,7 +28,7 @@ class MoviesServiceStack(Stack):
 
 
         # Create DynamoDB Table
-        movies_table = dynamodb.Table(self, "MoviesTable",
+        self.movies_table = dynamodb.Table(self, "MoviesTable",
             table_name="Movies",
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
@@ -43,7 +43,7 @@ class MoviesServiceStack(Stack):
         s3_bucket = s3.Bucket.from_bucket_name(self, "BingeBaboonBucket", bucket_name)
 
         lambda_env = {
-            "TABLE_NAME": movies_table.table_name,
+            "TABLE_NAME": self.movies_table.table_name,
             "BUCKET_NAME": bucket_name
         }
 
@@ -89,11 +89,11 @@ class MoviesServiceStack(Stack):
         )
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
-        movies_table.grant_read_write_data(create_movie_lambda)
-        movies_table.grant_read_write_data(get_movies_lambda)
-        movies_table.grant_read_write_data(get_movie_lambda)
-        movies_table.grant_read_write_data(update_movie_lambda)
-        movies_table.grant_read_write_data(delete_movie_lambda)
+        self.movies_table.grant_read_write_data(create_movie_lambda)
+        self.movies_table.grant_read_write_data(get_movies_lambda)
+        self.movies_table.grant_read_write_data(get_movie_lambda)
+        self.movies_table.grant_read_write_data(update_movie_lambda)
+        self.movies_table.grant_read_write_data(delete_movie_lambda)
 
 
         # Create API Gateway resources and methods
@@ -147,8 +147,8 @@ class MoviesServiceStack(Stack):
         subscriptions_stack.actors_table.grant_read_write_data(update_subscriptions_lambda)
         subscriptions_stack.genres_table.grant_read_write_data(update_subscriptions_lambda)
 
-        movies_table.grant_stream_read(update_subscriptions_lambda)
+        self.movies_table.grant_stream_read(update_subscriptions_lambda)
 
-        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(movies_table,
+        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(self.movies_table,
                                                                                      starting_position=_lambda.StartingPosition.LATEST
                                                                                      ))
