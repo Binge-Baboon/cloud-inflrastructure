@@ -87,31 +87,44 @@ class MultimediaServiceStack(Stack):
                                                   environment=lambda_env
                                                   )
 
+        get_presigned_url_lambda = _lambda.Function(self, "GetVideoFunction",
+                                            runtime=_lambda.Runtime.PYTHON_3_12,
+                                            handler="getPresignedUrl/get_presigned_url.handler",
+                                            code=_lambda.Code.from_asset("lambda/multimedia"),
+                                            memory_size=128,
+                                            timeout=Duration.seconds(10),
+                                            environment=lambda_env
+                                            )
+
         # Add the S3 event notification
         notification = s3_notifications.LambdaDestination(update_metadata_lambda)
         s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
         video_resource = api.root.add_resource("videos")
+        presigned_url_resource = api.root.add_resource("presigned_url")
 
         video_resource.add_method("PUT", apigateway.LambdaIntegration(resize_video_lambda),
                                   authorization_type=apigateway.AuthorizationType.COGNITO,
                                   authorizer=authorizer,
-                                  # api_key_required=True
                                   )
+
+        presigned_url_resource.add_method("GET", apigateway.LambdaIntegration(get_presigned_url_lambda),
+                                   authorization_type=apigateway.AuthorizationType.COGNITO,
+                                   authorizer=authorizer,
+                                   )
 
         videos_resource = video_resource.add_resource("upload")
 
         videos_resource.add_method("POST", apigateway.LambdaIntegration(upload_video_lambda),
                                    authorization_type=apigateway.AuthorizationType.COGNITO,
                                    authorizer=authorizer,
-                                   # api_key_required=True
                                    )
+
 
         image_resource = api.root.add_resource("images")
         image_resource.add_method("POST", apigateway.LambdaIntegration(upload_image_lambda),
                                   authorization_type=apigateway.AuthorizationType.COGNITO,
                                   authorizer=authorizer,
-                                  # api_key_required=True
                                   )
 
         # Grant Lambda functions permissions to interact with S3
@@ -119,5 +132,6 @@ class MultimediaServiceStack(Stack):
         s3_bucket.grant_read_write(upload_video_lambda)
         s3_bucket.grant_read_write(upload_image_lambda)
         s3_bucket.grant_read_write(update_metadata_lambda)
+        s3_bucket.grant_read(get_presigned_url_lambda)
 
         movies_table.grant_read_write_data(update_metadata_lambda)
