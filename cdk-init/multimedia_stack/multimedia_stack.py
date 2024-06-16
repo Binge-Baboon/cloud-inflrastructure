@@ -13,11 +13,11 @@ from aws_cdk import (
 from constructs import Construct
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
-from movie_service.movie_service_stack import MovieServiceStack
+from movie_service.movie_service_stack import MoviesServiceStack
 
 class MultimediaServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movie_stack: MovieServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movies_stack: MoviesServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
