@@ -64,16 +64,6 @@ class MultimediaServiceStack(Stack):
 
                                                )
 
-        # layer_zip_file_path = os.path.join(os.getcwd(), 'ffmpeg.zip')
-        #
-        # # Create the Lambda layer
-        # ffmpeg_layer = _lambda.LayerVersion(
-        #     self, 'FFMpeg',
-        #     code=_lambda.Code.from_asset(layer_zip_file_path),
-        #     compatible_runtimes=[_lambda.Runtime.PYTHON_3_12]
-        # )
-        #
-        # resize_video_lambda.add_layers(ffmpeg_layer)
 
         upload_video_lambda = _lambda.Function(self, "UploadVideoFunction",
                                                runtime=_lambda.Runtime.PYTHON_3_12,
