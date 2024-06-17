@@ -3,7 +3,6 @@ from aws_cdk import (
     aws_apigateway as apigateway,
     aws_cognito as cognito,
     aws_dynamodb as dynamodb,
-    aws_lambda_event_sources as lambda_event_sources,
     aws_s3 as s3,
     Duration,
     Stack,
@@ -16,7 +15,7 @@ from constructs import Construct
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
 
 
-class MoviesServiceStack(Stack):
+class TvShowsServiceStack(Stack):
 
     def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
@@ -27,8 +26,8 @@ class MoviesServiceStack(Stack):
 
 
         # Create DynamoDB Table
-        self.movies_table = dynamodb.Table(self, "MoviesTable",
-            table_name="Movies",
+        self.tv_shows_table = dynamodb.Table(self, "TvShowsTable",
+            table_name="TvShows",
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
             read_capacity=1,
@@ -42,68 +41,68 @@ class MoviesServiceStack(Stack):
         s3_bucket = s3.Bucket.from_bucket_name(self, "BingeBaboonBucket", bucket_name)
 
         lambda_env = {
-            "TABLE_NAME": self.movies_table.table_name,
+            "TABLE_NAME": self.tv_shows_table.table_name,
             "BUCKET_NAME": bucket_name
         }
 
-        create_movie_lambda = _lambda.Function(self, "CreateMovieFunction",
+        create_tv_show_lambda = _lambda.Function(self, "CreateTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="createMovie/create_movie.create",
-            code=_lambda.Code.from_asset("lambda/movies"),
+            handler="createTvShow/create_movie.create",
+            code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
-        get_movies_lambda = _lambda.Function(self, "GetMoviesFunction",
+        get_tv_shows_lambda = _lambda.Function(self, "GetTvShowsFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="getMovies/get_movies.get_all",
-            code=_lambda.Code.from_asset("lambda/movies"),
+            handler="getTvShows/get_tvShows.get_all",
+            code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
-        get_movie_lambda = _lambda.Function(self, "GetMovieFunction",
+        get_tv_show_lambda = _lambda.Function(self, "GetTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="getMovie/get_movie.get_one",
-            code=_lambda.Code.from_asset("lambda/movies"),
+            handler="getTvShow/get_movie.get_one",
+            code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
-        update_movie_lambda = _lambda.Function(self, "UpdateMovieFunction",
+        update_tv_show_lambda = _lambda.Function(self, "UpdateTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="updateMovie/update_movie.update",
-            code=_lambda.Code.from_asset("lambda/movies"),
+            handler="updateTvShow/update_movie.update",
+            code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
-        delete_movie_lambda = _lambda.Function(self, "DeleteMovieFunction",
+        delete_tv_show_lambda = _lambda.Function(self, "DeleteTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="deleteMovie/delete_movie.delete",
-            code=_lambda.Code.from_asset("lambda/movies"),
+            handler="deleteTvShow/delete_movie.delete",
+            code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
-        self.movies_table.grant_read_write_data(create_movie_lambda)
-        self.movies_table.grant_read_write_data(get_movies_lambda)
-        self.movies_table.grant_read_write_data(get_movie_lambda)
-        self.movies_table.grant_read_write_data(update_movie_lambda)
-        self.movies_table.grant_read_write_data(delete_movie_lambda)
+        self.tv_shows_table.grant_read_write_data(create_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(get_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(get_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(update_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(delete_tv_show_lambda)
 
 
         # Create API Gateway resources and methods
-        movies_resource = api.root.add_resource("movies")
+        tvShows_resource = api.root.add_resource("tv-shows")
 
-        movies_resource.add_method("POST", apigateway.LambdaIntegration(create_movie_lambda),
+        tvShows_resource.add_method("POST", apigateway.LambdaIntegration(create_tv_show_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
         )
-        movies_resource.add_method("GET", apigateway.LambdaIntegration(get_movies_lambda),
+        tvShows_resource.add_method("GET", apigateway.LambdaIntegration(get_tv_shows_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
@@ -111,19 +110,19 @@ class MoviesServiceStack(Stack):
 
 
 
-        movie_resource = movies_resource.add_resource("{id}")
+        tv_show_resource = tvShows_resource.add_resource("{id}")
 
-        movie_resource.add_method("GET", apigateway.LambdaIntegration(get_movie_lambda),
+        tv_show_resource.add_method("GET", apigateway.LambdaIntegration(get_tv_show_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
         )
-        movie_resource.add_method("PUT", apigateway.LambdaIntegration(update_movie_lambda),
+        tv_show_resource.add_method("PUT", apigateway.LambdaIntegration(update_tv_show_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
         )
-        movie_resource.add_method("DELETE", apigateway.LambdaIntegration(delete_movie_lambda),
+        tv_show_resource.add_method("DELETE", apigateway.LambdaIntegration(delete_tv_show_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True

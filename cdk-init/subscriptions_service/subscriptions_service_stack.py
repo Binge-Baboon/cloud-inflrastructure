@@ -3,6 +3,7 @@ from aws_cdk import (
     aws_apigateway as apigateway,
     aws_cognito as cognito,
     aws_dynamodb as dynamodb,
+    aws_lambda_event_sources as lambda_event_sources,
     Duration,
     Stack,
     CfnOutput,
@@ -12,10 +13,12 @@ from aws_cdk import (
 from constructs import Construct
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
+from movie_service.movie_service_stack import MoviesServiceStack
+from tvShowService.tv_show_service_stack import TvShowsServiceStack
 
 class SubscriptionsServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movies_stack: MoviesServiceStack, tv_shows_stack: TvShowsServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
@@ -263,3 +266,29 @@ class SubscriptionsServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
+
+
+
+        # Create Trigger Lambda function
+        update_subscriptions_lambda = _lambda.Function(self, "UpdateSubscriptionsFunction",
+                                                       runtime=_lambda.Runtime.PYTHON_3_12,
+                                                       handler="updateSubscriptions/update_subscriptions.handler",
+                                                       code=_lambda.Code.from_asset("lambda/subscriptions"),
+                                                       memory_size=128,
+                                                       timeout=Duration.seconds(10)
+                                                       )
+
+        # Permissions
+        self.directors_table.grant_read_write_data(update_subscriptions_lambda)
+        self.actors_table.grant_read_write_data(update_subscriptions_lambda)
+        self.genres_table.grant_read_write_data(update_subscriptions_lambda)
+
+        tv_shows_stack.tv_shows_table.grant_stream_read(update_subscriptions_lambda)
+        movies_stack.movies_table.grant_stream_read(update_subscriptions_lambda)
+
+        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(tv_shows_stack.tv_shows_table,
+                                                                                            starting_position=_lambda.StartingPosition.LATEST
+                                                                                            ))
+        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(movies_stack.movies_table,
+                                                                                            starting_position=_lambda.StartingPosition.LATEST
+                                                                                            ))
