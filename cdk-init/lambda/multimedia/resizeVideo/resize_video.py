@@ -1,54 +1,96 @@
 import json
+import subprocess
+import os
 import boto3
-import cv2
-from shared.utils import create_response
 
-s3_client = boto3.client('s3')
-
+s3 = boto3.client('s3')
 
 def resize(event, context):
+    # Parse input event
     bucket = "binge-baboon"
     body = json.loads(event['body'])
     movie_id = body.get("id")
-    key = "videos/" + movie_id + "/" + body.get("image_key")
+    video_key = body.get("video_key")
+    key = "videos/" + movie_id + "/" + video_key
 
-    download_path = f'/tmp/{key}'
+    output_prefix = "videos/" + movie_id + "/"
+    download_dir = '/tmp/videos'
+    os.makedirs(download_dir, exist_ok=True)  # Ensure the directory exists
 
-    s3_client.download_file(bucket, key, download_path)
+    download_path = os.path.join(download_dir, video_key)
+    s3.download_file(bucket, key, download_path)
 
-    output_path = f'/tmp/resized-{key}'
+    output_path = f'/tmp/videos/480.mp4'
 
-    cap = cv2.VideoCapture(download_path)
-
-    if not cap.isOpened():
-        return create_response(500, 'Error opening video file')
-
-
-    original_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    if original_height == 720:
-        target_resolution = (720, 480)
-    elif original_height == 480:
-        target_resolution = (640, 360)
-    elif original_height == 360:
-        return create_response(200, 'Video is already at the lowest resolution (360p)')
+    # cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale=-1:{height}" -c:a copy {output_path}'
+    cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale={720}:{480}" -c:a copy {output_path}'
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': 'Error getting video information with ffprobe',
+                                'message': f'{result.stderr}'})
+        }
     else:
-        return create_response(200, 'Video resolution is not 720p, 480p, or 360p')
+        # Upload the resized video back to S3
+        resized_key = f'{output_prefix}{480}.mp4'
+        s3.upload_file(output_path, bucket, resized_key)
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(output_path, fourcc, cap.get(cv2.CAP_PROP_FPS), target_resolution)
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        resized_frame = cv2.resize(frame, target_resolution)
-        out.write(resized_frame)
+    # Determine the original height using FFmpeg
+    #cmd = f'/opt/bin/ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 {download_path}'
+    # cmd = f'/opt/bin/ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 {download_path}'
+    # result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    # if result.returncode != 0:
+    #     return {
+    #         'statusCode': 500,
+    #         'body': json.dumps({'error':'Error getting video information with ffprobe',
+    #                             'message':f'{result.stderr}'})
+    #     }
+    #
+    # try:
+    #     _, original_height = map(int, result.stdout.strip().split(','))
+    # except ValueError:
+    #     return {
+    #         'statusCode': 500,
+    #         'body': json.dumps('Error parsing video dimensions')
+    #     }
+    #
+    # target_resolutions = []
+    # if original_height > 720:
+    #     target_resolutions = [(1080, 720), (720, 480), (640, 360)]
+    # elif original_height == 720:
+    #     target_resolutions = [(720, 480), (640, 360)]
+    # elif original_height > 360:
+    #     target_resolutions = [(640, 360)]
+    # else:
+    #     return {
+    #         'statusCode': 400,
+    #         'body': json.dumps('Video resolution is too low to resize')
+    #     }
+    #
+    # resized_videos = []
+    # for resolution in target_resolutions:
+    #     width, height = resolution
+    #     output_path = f'/tmp/{output_prefix}/{height}.mp4'
+    #
+    #     #cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale=-1:{height}" -c:a copy {output_path}'
+    #     cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale={width}:{height}" -c:a copy {output_path}'
+    #     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    #     if result.returncode != 0:
+    #         return {
+    #             'statusCode': 500,
+    #             'body': json.dumps(f'Error resizing video to {height}p with ffmpeg: {result.stderr}')
+    #         }
+    #     else:
+    #         # Upload the resized video back to S3
+    #         resized_key = f'{output_prefix}/{height}.mp4'
+    #         s3.upload_file(output_path, bucket, resized_key)
+    #         resized_videos.append(resized_key)
+    #     os.remove(output_path)
+    os.remove(download_path)
 
-    cap.release()
-    out.release()
-
-    resized_key = f'videos/{movie_id}/{target_resolution[1]}.mp4'
-    s3_client.upload_file(output_path, bucket, resized_key)
-
-    return create_response(200, 'Video resized and uploaded successfully!')
+    return {
+        'statusCode': 200,
+        'body': json.dumps(f'Video resized to lower resolutions and uploaded successfully')
+    }

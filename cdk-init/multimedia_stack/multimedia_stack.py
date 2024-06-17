@@ -10,8 +10,10 @@ from aws_cdk import (
     aws_s3 as s3,
     RemovalPolicy,
     aws_s3_notifications as s3_notifications,
+    aws_lambda_python_alpha as _alambda,
 )
 from constructs import Construct
+import os
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
 from movie_service.movie_service_stack import MoviesServiceStack
@@ -53,10 +55,25 @@ class MultimediaServiceStack(Stack):
                                                runtime=_lambda.Runtime.PYTHON_3_12,
                                                handler="resizeVideo/resize_video.resize",
                                                code=_lambda.Code.from_asset("lambda/multimedia"),
-                                               memory_size=128,
-                                               timeout=Duration.seconds(10),
-                                               environment=lambda_env
+                                               memory_size=512,
+                                               timeout=Duration.seconds(60),
+                                               environment=lambda_env,
+                                               layers=[ _lambda.LayerVersion.from_layer_version_arn(self, 'ffmpeg',
+                                                                                                   'arn:aws:lambda:eu-central-1:590183980405:layer:ffmpeg:1'),
+                                                       ]
+
                                                )
+
+        # layer_zip_file_path = os.path.join(os.getcwd(), 'ffmpeg.zip')
+        #
+        # # Create the Lambda layer
+        # ffmpeg_layer = _lambda.LayerVersion(
+        #     self, 'FFMpeg',
+        #     code=_lambda.Code.from_asset(layer_zip_file_path),
+        #     compatible_runtimes=[_lambda.Runtime.PYTHON_3_12]
+        # )
+        #
+        # resize_video_lambda.add_layers(ffmpeg_layer)
 
         upload_video_lambda = _lambda.Function(self, "UploadVideoFunction",
                                                runtime=_lambda.Runtime.PYTHON_3_12,
