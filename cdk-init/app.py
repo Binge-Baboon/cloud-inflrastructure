@@ -29,7 +29,8 @@ UsersServiceStack(app, "UserServiceStack",
 )
 MultimediaServiceStack(app, "MultimediaServiceStack",
     init_stack = init_stack,
-    movies_stack = movies_stack
+    movies_stack = movies_stack,
+    tv_shows_stack = tv_shows_stack
                        )
 
 

@@ -9,7 +9,6 @@ def upload(event, context):
     bucket_name = 'binge-baboon'
     body = json.loads(event['body'])
     folder_name = body.get('folder')
-    id = body.get('id')
     resolution = body.get('resolution')
     datatype = body.get('type')
 
@@ -17,7 +16,7 @@ def upload(event, context):
 
     presigned_url = s3_client.generate_presigned_url('put_object',
                                                      Params={'Bucket': bucket_name,
-                                                             'Key': f'{folder_name}/{id}/{resolution}.{datatype}'},
+                                                             'Key': f'{folder_name}/{resolution}.{datatype}'},
                                                      ExpiresIn=expiration)
 
     return create_response(200,{'presigned_url': presigned_url})

@@ -9,24 +9,25 @@ from aws_cdk import (
     Aws,
     aws_s3 as s3,
     RemovalPolicy,
-    aws_s3_notifications as s3_notifications,
-    aws_lambda_python_alpha as _alambda,
+    aws_s3_notifications as s3_notifications
 )
 from constructs import Construct
 import os
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
 from movie_service.movie_service_stack import MoviesServiceStack
+from tvShowService.tv_show_service_stack import TvShowsServiceStack
 
 class MultimediaServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movies_stack: MoviesServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movies_stack: MoviesServiceStack, tv_shows_stack: TvShowsServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
         user_pool = init_stack.user_pool
         authorizer = init_stack.authorizer
         movies_table = movies_stack.movies_table
+        tv_shows_table = tv_shows_stack.tv_shows_table
 
         bucket_name = "binge-baboon"
         s3_bucket = s3.Bucket(self,
@@ -48,7 +49,9 @@ class MultimediaServiceStack(Stack):
 
         lambda_env = {
             "BUCKET_NAME": bucket_name,
-            "MOVIES_TABLE_NAME": movies_table.table_name
+            "MOVIES_TABLE_NAME": movies_table.table_name,
+            "TV_SHOWS_TABLE_NAME": tv_shows_table.table_name
+
         }
 
         resize_video_lambda = _lambda.Function(self, "ResizeVideoFunction",
@@ -142,3 +145,4 @@ class MultimediaServiceStack(Stack):
         s3_bucket.grant_read(get_presigned_url_lambda)
 
         movies_table.grant_read_write_data(update_metadata_lambda)
+        tv_shows_table.grant_read_write_data(update_metadata_lambda)
