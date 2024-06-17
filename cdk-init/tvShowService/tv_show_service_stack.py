@@ -47,7 +47,7 @@ class TvShowsServiceStack(Stack):
 
         create_tv_show_lambda = _lambda.Function(self, "CreateTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="createTvShow/create_movie.create",
+            handler="createTvShow/create_tv_show.create",
             code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
@@ -55,7 +55,7 @@ class TvShowsServiceStack(Stack):
         )
         get_tv_shows_lambda = _lambda.Function(self, "GetTvShowsFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="getTvShows/get_tvShows.get_all",
+            handler="getTvShows/get_tv_shows.get_all",
             code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
@@ -63,7 +63,7 @@ class TvShowsServiceStack(Stack):
         )
         get_tv_show_lambda = _lambda.Function(self, "GetTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="getTvShow/get_movie.get_one",
+            handler="getTvShow/get_tv_show.get_one",
             code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
@@ -71,7 +71,7 @@ class TvShowsServiceStack(Stack):
         )
         update_tv_show_lambda = _lambda.Function(self, "UpdateTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="updateTvShow/update_movie.update",
+            handler="updateTvShow/update_tv_show.update",
             code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
@@ -79,7 +79,7 @@ class TvShowsServiceStack(Stack):
         )
         delete_tv_show_lambda = _lambda.Function(self, "DeleteTvShowFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="deleteTvShow/delete_movie.delete",
+            handler="deleteTvShow/delete_tv_show.delete",
             code=_lambda.Code.from_asset("lambda/tvShows"),
             memory_size=128,
             timeout=Duration.seconds(10),
