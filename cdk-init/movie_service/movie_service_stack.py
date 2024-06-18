@@ -87,12 +87,22 @@ class MoviesServiceStack(Stack):
             environment=lambda_env
         )
 
+        search_movies_lambda = _lambda.Function(self, "SearchMoviesFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="searchMovies/search_movies.search",
+            code=_lambda.Code.from_asset("lambda/movies"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
+
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         self.movies_table.grant_read_write_data(create_movie_lambda)
         self.movies_table.grant_read_write_data(get_movies_lambda)
         self.movies_table.grant_read_write_data(get_movie_lambda)
         self.movies_table.grant_read_write_data(update_movie_lambda)
         self.movies_table.grant_read_write_data(delete_movie_lambda)
+        self.movies_table.grant_read_write_data(search_movies_lambda)
 
 
         # Create API Gateway resources and methods
@@ -124,6 +134,13 @@ class MoviesServiceStack(Stack):
             # api_key_required=True
         )
         movie_resource.add_method("DELETE", apigateway.LambdaIntegration(delete_movie_lambda),
+            authorization_type=apigateway.AuthorizationType.COGNITO,
+            authorizer=authorizer,
+            # api_key_required=True
+        )
+
+        search_resource = movies_resource.add_resource("search")
+        search_resource.add_method("PUT", apigateway.LambdaIntegration(search_movies_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
