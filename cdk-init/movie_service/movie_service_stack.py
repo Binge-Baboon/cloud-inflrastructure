@@ -34,7 +34,7 @@ class MoviesServiceStack(Stack):
             read_capacity=1,
             write_capacity=1,
             removal_policy=RemovalPolicy.DESTROY,
-            stream = dynamodb.StreamViewType.NEW_IMAGE
+            stream = dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
         )
 
 

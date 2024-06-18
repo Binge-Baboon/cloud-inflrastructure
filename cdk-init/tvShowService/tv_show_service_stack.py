@@ -33,7 +33,7 @@ class TvShowsServiceStack(Stack):
             read_capacity=1,
             write_capacity=1,
             removal_policy=RemovalPolicy.DESTROY,
-            stream = dynamodb.StreamViewType.NEW_IMAGE
+            stream = dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
         )
 
 
@@ -88,7 +88,7 @@ class TvShowsServiceStack(Stack):
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         self.tv_shows_table.grant_read_write_data(create_tv_show_lambda)
-        self.tv_shows_table.grant_read_write_data(get_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(get_tv_shows_lambda)
         self.tv_shows_table.grant_read_write_data(get_tv_show_lambda)
         self.tv_shows_table.grant_read_write_data(update_tv_show_lambda)
         self.tv_shows_table.grant_read_write_data(delete_tv_show_lambda)

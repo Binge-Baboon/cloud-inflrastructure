@@ -33,5 +33,4 @@ MultimediaServiceStack(app, "MultimediaServiceStack",
     tv_shows_stack = tv_shows_stack
                        )
 
-
 app.synth()

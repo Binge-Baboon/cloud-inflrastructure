@@ -1,12 +1,14 @@
 from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigateway,
+    aws_lambda_event_sources as lambda_event_sources,
     aws_cognito as cognito,
     aws_dynamodb as dynamodb,
     Duration,
     Stack,
     CfnOutput,
     Aws,
+    aws_sqs as sqs,
     aws_s3 as s3,
     RemovalPolicy,
     aws_s3_notifications as s3_notifications
@@ -106,7 +108,39 @@ class MultimediaServiceStack(Stack):
                                             environment=lambda_env
                                             )
 
-        # Add the S3 event notification
+        delete_movie_data_lambda = _lambda.Function(self, "DeleteMovieDataFunction",
+                                                    runtime=_lambda.Runtime.PYTHON_3_12,
+                                                    handler="deleteMovieData/delete_movie_data.handler",
+                                                    code=_lambda.Code.from_asset("lambda/multimedia"),
+                                                    memory_size=128,
+                                                    timeout=Duration.seconds(10),
+                                                    environment=lambda_env
+                                                    )
+
+        delete_tv_show_data_lambda = _lambda.Function(self, "DeleteTvShowDataFunction",
+                                                    runtime=_lambda.Runtime.PYTHON_3_12,
+                                                    handler="deleteTvShowData/delete_tv_show_data.handler",
+                                                    code=_lambda.Code.from_asset("lambda/multimedia"),
+                                                    memory_size=128,
+                                                    timeout=Duration.seconds(10),
+                                                    environment=lambda_env
+                                                    )
+
+        delete_movie_data_lambda.add_event_source(
+            lambda_event_sources.DynamoEventSource(
+                movies_table,
+                starting_position=_lambda.StartingPosition.LATEST,
+            )
+        )
+
+        delete_tv_show_data_lambda.add_event_source(
+            lambda_event_sources.DynamoEventSource(
+                tv_shows_table,
+                starting_position=_lambda.StartingPosition.LATEST,
+            )
+        )
+
+        # Add the S3 event notification for update
         notification = s3_notifications.LambdaDestination(update_metadata_lambda)
         s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
@@ -143,6 +177,11 @@ class MultimediaServiceStack(Stack):
         s3_bucket.grant_read_write(upload_image_lambda)
         s3_bucket.grant_read_write(update_metadata_lambda)
         s3_bucket.grant_read(get_presigned_url_lambda)
+        s3_bucket.grant_read_write(delete_movie_data_lambda)
+        s3_bucket.grant_read_write(delete_tv_show_data_lambda)
 
         movies_table.grant_read_write_data(update_metadata_lambda)
         tv_shows_table.grant_read_write_data(update_metadata_lambda)
+
+        movies_table.grant_stream_read(delete_movie_data_lambda)
+        tv_shows_table.grant_read_write_data(delete_tv_show_data_lambda)
