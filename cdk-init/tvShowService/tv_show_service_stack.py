@@ -86,12 +86,22 @@ class TvShowsServiceStack(Stack):
             environment=lambda_env
         )
 
+        search_tv_shows_lambda = _lambda.Function(self, "SearchMoviesFunction",
+                                                runtime=_lambda.Runtime.PYTHON_3_12,
+                                                handler="searchTvShows/search_tv_shows.search",
+                                                code=_lambda.Code.from_asset("lambda/tvShows"),
+                                                memory_size=128,
+                                                timeout=Duration.seconds(10),
+                                                environment=lambda_env
+                                                )
+
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         self.tv_shows_table.grant_read_write_data(create_tv_show_lambda)
         self.tv_shows_table.grant_read_write_data(get_tv_shows_lambda)
         self.tv_shows_table.grant_read_write_data(get_tv_show_lambda)
         self.tv_shows_table.grant_read_write_data(update_tv_show_lambda)
         self.tv_shows_table.grant_read_write_data(delete_tv_show_lambda)
+        self.tv_shows_table.grant_read_write_data(search_tv_shows_lambda)
 
 
         # Create API Gateway resources and methods
@@ -127,3 +137,9 @@ class TvShowsServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
+
+        search_resource = tvShows_resource.add_resource("search")
+        search_resource.add_method("PUT", apigateway.LambdaIntegration(search_tv_shows_lambda),
+                                   authorization_type=apigateway.AuthorizationType.COGNITO,
+                                   authorizer=authorizer,
+                                   )

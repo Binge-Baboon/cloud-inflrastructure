@@ -14,6 +14,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def handler(event, context):
+    logger.info(f"Received event: {json.dumps(event)}")
+
     bucket_name = os.environ['BUCKET_NAME']
     movies_table_name = os.environ['MOVIES_TABLE_NAME']
     tv_shows_table_name = os.environ['TV_SHOWS_TABLE_NAME']
