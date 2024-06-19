@@ -51,7 +51,15 @@ def resize(event, context):
 
     else:
         transcoded_key = f'{output_prefix}{resolution[1]}.mp4'
-        s3.upload_file(output_path, bucket, transcoded_key)
+        logger.info(f"output_path: {output_path}")
+        logger.info(f"bucket: {bucket}")
+        logger.info(f"transcoded_key: {transcoded_key}")
+        # s3.upload_file(output_path, bucket, transcoded_key)
+
+        # Use s3.put_object to upload the file
+        with open(output_path, "rb") as f:
+            s3.put_object(Bucket=bucket, Key=transcoded_key, Body=f)
+            logger.info(f"File uploaded to S3 at {transcoded_key}")
 
 
 
