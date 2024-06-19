@@ -1,11 +1,10 @@
 import json
 
 def handler(event, context):
-    original_key = event['key']
-    resolutions = ['720p', '480p', '360p']
+    key = event['key']
+    resolutions = [720, 480, 360]
 
     return {
-        'statusCode': 200,
-        'original_key': original_key,
+        'original_key': key,
         'resolutions': resolutions
     }

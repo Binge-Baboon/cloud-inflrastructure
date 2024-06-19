@@ -136,11 +136,6 @@ class MultimediaServiceStack(Stack):
         video_resource = api.root.add_resource("videos")
         presigned_url_resource = api.root.add_resource("presigned_url")
 
-        video_resource.add_method("PUT", apigateway.LambdaIntegration(resize_video_lambda),
-                                  authorization_type=apigateway.AuthorizationType.COGNITO,
-                                  authorizer=authorizer,
-                                  )
-
         presigned_url_resource.add_method("GET", apigateway.LambdaIntegration(get_presigned_url_lambda),
                                    authorization_type=apigateway.AuthorizationType.COGNITO,
                                    authorizer=authorizer,
@@ -161,7 +156,6 @@ class MultimediaServiceStack(Stack):
                                   )
 
         # Grant Lambda functions permissions to interact with S3
-        s3_bucket.grant_read_write(resize_video_lambda)
         s3_bucket.grant_read_write(upload_video_lambda)
         s3_bucket.grant_read_write(upload_image_lambda)
         s3_bucket.grant_read_write(update_metadata_lambda)
@@ -189,7 +183,7 @@ class MultimediaServiceStack(Stack):
             environment=lambda_env
         )
 
-        transcode_lambda = _lambda.Function(self, "ResizeVideoFunction",
+        resize_video_lambda = _lambda.Function(self, "ResizeVideoFunction",
                                                runtime=_lambda.Runtime.PYTHON_3_12,
                                                handler="resizeVideo/resize_video.resize",
                                                code=_lambda.Code.from_asset("lambda/multimedia"),
@@ -202,17 +196,6 @@ class MultimediaServiceStack(Stack):
 
                                                )
 
-        # Write to S3 Lambda
-        write_to_s3_lambda = _lambda.Function(
-            self, "WriteToS3Function",
-            runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="writeToS3/write_to_s3.handler",
-            code=_lambda.Code.from_asset("lambda/multimedia"),
-            memory_size=128,
-            timeout=Duration.seconds(10),
-            environment=lambda_env
-        )
-
         # Step Function Tasks
         split_task = tasks.LambdaInvoke(
             self, "SplitResolutions",
@@ -221,82 +204,80 @@ class MultimediaServiceStack(Stack):
         )
 
         transcode_720p_task = tasks.LambdaInvoke(
-            self, "Transcode720p",
-            lambda_function=transcode_lambda,
+            self, "TranscodeAndUpload720p",
+            lambda_function=resize_video_lambda,
             payload=sfn.TaskInput.from_object({
                 "original_key": sfn.JsonPath.string_at("$.original_key"),
-                "target_resolution": "720p"
+                "target_resolution": 720
             }),
             result_path="$.transcode720p"
-        )
-
-        write_to_s3_720p_task = tasks.LambdaInvoke(
-            self, "WriteToS3_720p",
-            lambda_function=write_to_s3_lambda,
-            payload=sfn.TaskInput.from_object({
-                "transcoded_key": sfn.JsonPath.string_at("$.transcode720p.Payload.transcoded_key")
-            }),
-            result_path="$.writeToS3_720p"
         ).add_retry(
             max_attempts=3,
             interval=Duration.seconds(5)
         )
 
         transcode_480p_task = tasks.LambdaInvoke(
-            self, "Transcode480p",
-            lambda_function=transcode_lambda,
+            self, "TranscodeAndUpload480p",
+            lambda_function=resize_video_lambda,
             payload=sfn.TaskInput.from_object({
                 "original_key": sfn.JsonPath.string_at("$.original_key"),
-                "target_resolution": "480p"
+                "target_resolution": 480
             }),
             result_path="$.transcode480p"
-        )
-
-        write_to_s3_480p_task = tasks.LambdaInvoke(
-            self, "WriteToS3_480p",
-            lambda_function=write_to_s3_lambda,
-            payload=sfn.TaskInput.from_object({
-                "transcoded_key": sfn.JsonPath.string_at("$.transcode480p.Payload.transcoded_key")
-            }),
-            result_path="$.writeToS3_480p"
         ).add_retry(
             max_attempts=3,
             interval=Duration.seconds(5)
         )
 
         transcode_360p_task = tasks.LambdaInvoke(
-            self, "Transcode360p",
-            lambda_function=transcode_lambda,
+            self, "TranscodeAndUpload360p",
+            lambda_function=resize_video_lambda,
             payload=sfn.TaskInput.from_object({
                 "original_key": sfn.JsonPath.string_at("$.original_key"),
-                "target_resolution": "360p"
+                "target_resolution": 360
             }),
             result_path="$.transcode360p"
-        )
-
-        write_to_s3_360p_task = tasks.LambdaInvoke(
-            self, "WriteToS3_360p",
-            lambda_function=write_to_s3_lambda,
-            payload=sfn.TaskInput.from_object({
-                "transcoded_key": sfn.JsonPath.string_at("$.transcode360p.Payload.transcoded_key")
-            }),
-            result_path="$.writeToS3_360p"
         ).add_retry(
             max_attempts=3,
             interval=Duration.seconds(5)
         )
 
+
         # Parallel State for Transcoding
         parallel_transcode = sfn.Parallel(self, "ParallelTranscode")
-        parallel_transcode.branch(transcode_720p_task.next(write_to_s3_720p_task))
-        parallel_transcode.branch(transcode_480p_task.next(write_to_s3_480p_task))
-        parallel_transcode.branch(transcode_360p_task.next(write_to_s3_360p_task))
+        parallel_transcode.branch(transcode_720p_task)
+        parallel_transcode.branch(transcode_480p_task)
+        parallel_transcode.branch(transcode_360p_task)
 
         # State Machine Definition
         definition = split_task.next(parallel_transcode)
 
         state_machine = sfn.StateMachine(
             self, "VideoProcessingStateMachine",
-            definition=definition,
+            definition_body=sfn.DefinitionBody.from_chainable(definition),
             timeout=Duration.minutes(10)
         )
+
+        # Lambda to start the Step Function execution
+        start_step_function_lambda = _lambda.Function(
+            self, "StartSplittingResolutionsFunctionExecution",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="startSplittingResolutions/start_splitting_resolutions.handler",
+            code=_lambda.Code.from_asset("lambda/multimedia"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment={
+                "STATE_MACHINE_ARN": state_machine.state_machine_arn
+            }
+        )
+
+        state_machine.grant_start_execution(start_step_function_lambda)
+
+        transcode_resource = video_resource.add_resource("transcode")
+        transcode_resource.add_method("PUT", apigateway.LambdaIntegration(start_step_function_lambda),
+                                  authorization_type=apigateway.AuthorizationType.COGNITO,
+                                  authorizer=authorizer,
+                                  )
+
+        s3_bucket.grant_read_write(split_resolutions_lambda)
+        s3_bucket.grant_read_write(resize_video_lambda)
