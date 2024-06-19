@@ -12,28 +12,32 @@ def resize(event, context):
     target_resolution = event['target_resolution']
     video_type, video_id, episode_number = extract_video_details(original_key)
 
+    resolutions = {
+        720: 1080,
+        480: 720,
+        360: 480
+    }
 
+    if target_resolution not in resolutions.keys():
+        resolution = [-1, target_resolution]
+    else:
+        resolution = [resolutions[target_resolution], target_resolution]
+
+    output_prefix = ""
     if video_type == 'movies':
         output_prefix = "videos/movies" + video_id + "/"
     elif video_type == 'tv-show':
         output_prefix = "videos/tv-show/" + video_id + "/" + episode_number + "/"
 
-
-    body = json.loads(event['body'])
-    movie_id = body.get("id")
-    video_key = body.get("video_key")
-    key = "videos/" + movie_id + "/" + video_key
-
-
     download_dir = '/tmp/videos'
     os.makedirs(download_dir, exist_ok=True)
 
-    download_path = os.path.join(download_dir, video_key)
-    s3.download_file(bucket, key, download_path)
+    download_path = os.path.join(download_dir, original_key)
+    s3.download_file(bucket, original_key, download_path)
 
-    output_path = f'/tmp/videos/480.mp4'
+    output_path = f'/tmp/videos/{resolution[1]}.mp4'
 
-    cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale={720}:{480}" -c:a copy {output_path}'
+    cmd = f'/opt/bin/ffmpeg -i {download_path} -vf "scale={resolution[0]}:{resolution[1]}" -c:a copy {output_path}'
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         return {
@@ -42,8 +46,7 @@ def resize(event, context):
                                 'message': f'{result.stderr}'})
         }
     else:
-        # Upload the resized video back to S3
-        transcoded_key = f'{output_prefix}{480}.mp4'
+        transcoded_key = f'{output_prefix}{resolution[1]}.mp4'
         s3.upload_file(output_path, bucket, transcoded_key)
 
 
