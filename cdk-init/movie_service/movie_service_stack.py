@@ -14,12 +14,11 @@ from aws_cdk import (
 from constructs import Construct
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
-from subscriptions_service.subscriptions_service_stack import SubscriptionsServiceStack
 
 
 class MoviesServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, subscriptions_stack: SubscriptionsServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
@@ -27,17 +26,15 @@ class MoviesServiceStack(Stack):
         authorizer = init_stack.authorizer
 
 
-
-
         # Create DynamoDB Table
-        movies_table = dynamodb.Table(self, "MoviesTable",
+        self.movies_table = dynamodb.Table(self, "MoviesTable",
             table_name="Movies",
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1,
             removal_policy=RemovalPolicy.DESTROY,
-            stream = dynamodb.StreamViewType.NEW_IMAGE
+            stream = dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
         )
 
 
@@ -45,7 +42,7 @@ class MoviesServiceStack(Stack):
         s3_bucket = s3.Bucket.from_bucket_name(self, "BingeBaboonBucket", bucket_name)
 
         lambda_env = {
-            "TABLE_NAME": movies_table.table_name,
+            "TABLE_NAME": self.movies_table.table_name,
             "BUCKET_NAME": bucket_name
         }
 
@@ -90,44 +87,23 @@ class MoviesServiceStack(Stack):
             environment=lambda_env
         )
 
-        resize_video_lambda = _lambda.Function(self, "ResizeVideoFunction",
+        search_movies_lambda = _lambda.Function(self, "SearchMoviesFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="resizeVideo/resize_video.resize",
+            handler="searchMovies/search_movies.search",
             code=_lambda.Code.from_asset("lambda/movies"),
             memory_size=128,
             timeout=Duration.seconds(10),
             environment=lambda_env
-        )
-
-        upload_video_lambda = _lambda.Function(self, "UploadVideoFunction",
-            runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="uploadVideo/upload_video.upload",
-            code=_lambda.Code.from_asset("lambda/movies"),
-            memory_size=128,
-            timeout=Duration.seconds(10),
-            environment=lambda_env
-        )
-
-        upload_image_lambda = _lambda.Function(self, "UploadImageFunction",
-            runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="uploadImage/upload_image.upload",
-            code=_lambda.Code.from_asset("lambda/movies"),
-            memory_size=128,
-            timeout=Duration.seconds(10),
-            environment=lambda_env,
-            layers=[_lambda.LayerVersion.from_layer_version_arn(self, 'Pillow', 'arn:aws:lambda:eu-central-1:770693421928:layer:Klayers-p312-Pillow:2')]
         )
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
-        movies_table.grant_read_write_data(create_movie_lambda)
-        movies_table.grant_read_write_data(get_movies_lambda)
-        movies_table.grant_read_write_data(get_movie_lambda)
-        movies_table.grant_read_write_data(update_movie_lambda)
-        movies_table.grant_read_write_data(delete_movie_lambda)
+        self.movies_table.grant_read_write_data(create_movie_lambda)
+        self.movies_table.grant_read_write_data(get_movies_lambda)
+        self.movies_table.grant_read_write_data(get_movie_lambda)
+        self.movies_table.grant_read_write_data(update_movie_lambda)
+        self.movies_table.grant_read_write_data(delete_movie_lambda)
+        self.movies_table.grant_read_write_data(search_movies_lambda)
 
-        s3_bucket.grant_read_write(resize_video_lambda)
-        s3_bucket.grant_read_write(upload_video_lambda)
-        s3_bucket.grant_read_write(upload_image_lambda)
 
         # Create API Gateway resources and methods
         movies_resource = api.root.add_resource("movies")
@@ -163,47 +139,9 @@ class MoviesServiceStack(Stack):
             # api_key_required=True
         )
 
-        video_resource = api.root.add_resource("videos")
-
-        video_resource.add_method("PUT", apigateway.LambdaIntegration(resize_video_lambda),
+        search_resource = movies_resource.add_resource("search")
+        search_resource.add_method("PUT", apigateway.LambdaIntegration(search_movies_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
         )
-
-
-        videos_resource = video_resource.add_resource("upload")
-
-        videos_resource.add_method("POST", apigateway.LambdaIntegration(upload_video_lambda),
-            authorization_type=apigateway.AuthorizationType.COGNITO,
-            authorizer=authorizer,
-            # api_key_required=True
-        )
-
-        image_resource = api.root.add_resource("images")
-        image_resource.add_method("POST", apigateway.LambdaIntegration(upload_image_lambda),
-            authorization_type=apigateway.AuthorizationType.COGNITO,
-            authorizer=authorizer,
-            # api_key_required=True
-        )
-
-        # Create Trigger Lambda function
-        update_subscriptions_lambda = _lambda.Function(self, "UpdateSubscriptionsFunction",
-                                                runtime=_lambda.Runtime.PYTHON_3_12,
-                                                handler="updateSubscriptions/update_subscriptions.handler",
-                                                code=_lambda.Code.from_asset("lambda/movies"),
-                                                memory_size=128,
-                                                timeout=Duration.seconds(10),
-                                                environment=lambda_env
-                                                )
-
-        #Permissions
-        subscriptions_stack.directors_table.grant_read_write_data(update_subscriptions_lambda)
-        subscriptions_stack.actors_table.grant_read_write_data(update_subscriptions_lambda)
-        subscriptions_stack.genres_table.grant_read_write_data(update_subscriptions_lambda)
-
-        movies_table.grant_stream_read(update_subscriptions_lambda)
-
-        update_subscriptions_lambda.add_event_source(lambda_event_sources.DynamoEventSource(movies_table,
-                                                                                     starting_position=_lambda.StartingPosition.LATEST
-                                                                                     ))

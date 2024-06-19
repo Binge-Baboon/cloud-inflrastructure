@@ -23,14 +23,14 @@ def handler(event, context):
 
             try:
                 movie = {
-                    'id': new_image['id']['S'],
-                    'title': new_image['title']['S'],
-                    'description': new_image['description']['S'],
-                    'rating': new_image['rating']['M'],
+                    # 'id': new_image['id']['S'],
+                    # 'title': new_image['title']['S'],
+                    # 'description': new_image['description']['S'],
+                    # 'rating': new_image['rating']['M'],
                     'genres': [genre['S'] for genre in new_image['genres']['L']],
                     'actors': [actor['S'] for actor in new_image['actors']['L']],
                     'directors': [director['S'] for director in new_image['directors']['L']],
-                    'metadata': new_image['metadata']['M']
+                    # 'metadata': new_image['metadata']['M']
                 }
             except KeyError as e:
                 logger.error('KeyError: %s', e)
@@ -51,4 +51,4 @@ def handler(event, context):
                 if not genres_table.get_item(Key={'genre': genre}).get('Item'):
                     genres_table.put_item(Item={'genre': genre})
 
-    return create_response(200, {'message': 'Processed movie record successfully'})
+    return create_response(200, {'message': 'Processed record successfully'})
