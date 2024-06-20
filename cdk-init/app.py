@@ -35,6 +35,8 @@ MultimediaServiceStack(app, "MultimediaServiceStack",
                        )
 notifications_stack = NotificationServiceStack(app, "NotificationServiceStack",
     init_stack = init_stack,
+    movies_stack = movies_stack,
+    tv_shows_stack = tv_shows_stack
 )
 
 app.synth()

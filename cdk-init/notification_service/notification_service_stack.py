@@ -3,6 +3,7 @@ from aws_cdk import (
     aws_apigateway as apigateway,
     aws_cognito as cognito,
     aws_dynamodb as dynamodb,
+    aws_lambda_event_sources as lambda_event_sources,
     aws_iam as iam,
     Duration,
     Stack,
@@ -13,11 +14,13 @@ from aws_cdk import (
 from constructs import Construct
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
+from movie_service.movie_service_stack import MoviesServiceStack
+from tvShowService.tv_show_service_stack import TvShowsServiceStack
 
 
 class NotificationServiceStack(Stack):
 
-    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, init_stack: BingeBaboonServiceStack, movies_stack: MoviesServiceStack, tv_shows_stack: TvShowsServiceStack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         api = init_stack.api
@@ -58,6 +61,15 @@ class NotificationServiceStack(Stack):
                                             environment=lambda_env
                                             )
 
+        handle_notifications_lambda = _lambda.Function(self, "HandleNotificationsFunction",
+                                              runtime=_lambda.Runtime.PYTHON_3_12,
+                                              handler="handleNotifications/handle_notifications.handler",
+                                              code=_lambda.Code.from_asset("lambda/notifications"),
+                                              memory_size=128,
+                                              timeout=Duration.seconds(10),
+                                              environment=lambda_env
+                                              )
+
 
         sns_policy = iam.PolicyStatement(
             actions=[
@@ -74,6 +86,14 @@ class NotificationServiceStack(Stack):
         notify_lambda.add_to_role_policy(sns_policy)
         subscribe_lambda.add_to_role_policy(sns_policy)
         unsubscribe_lambda.add_to_role_policy(sns_policy)
+        handle_notifications_lambda.add_to_role_policy(sns_policy)
+
+
+        invoke_lambda_policy = iam.PolicyStatement(
+            actions=["lambda:InvokeFunction"],
+            resources=[notify_lambda.function_arn]
+        )
+        handle_notifications_lambda.add_to_role_policy(invoke_lambda_policy)
 
 
         # Create API Gateway resources and methods
@@ -97,3 +117,14 @@ class NotificationServiceStack(Stack):
                                       authorization_type=apigateway.AuthorizationType.COGNITO,
                                       authorizer=authorizer,
                                       )
+
+        tv_shows_stack.tv_shows_table.grant_stream_read(handle_notifications_lambda)
+        movies_stack.movies_table.grant_stream_read(handle_notifications_lambda)
+
+        handle_notifications_lambda.add_event_source(
+            lambda_event_sources.DynamoEventSource(tv_shows_stack.tv_shows_table,
+                                                   starting_position=_lambda.StartingPosition.LATEST
+                                                   ))
+        handle_notifications_lambda.add_event_source(lambda_event_sources.DynamoEventSource(movies_stack.movies_table,
+                                                                                            starting_position=_lambda.StartingPosition.LATEST
+                                                                                            ))
