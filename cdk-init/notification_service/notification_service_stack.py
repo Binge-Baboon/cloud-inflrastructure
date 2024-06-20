@@ -70,6 +70,14 @@ class NotificationServiceStack(Stack):
                                               environment=lambda_env
                                               )
 
+        list_subscriptions_lambda = _lambda.Function(self, "ListSubscriptionsFunction",
+                                                     runtime=_lambda.Runtime.PYTHON_3_12,
+                                                     handler="listSubscriptions/list_subscriptions.handler",
+                                                     code=_lambda.Code.from_asset("lambda/notifications"),
+                                                     memory_size=128,
+                                                     timeout=Duration.seconds(10),
+                                                     environment=lambda_env
+                                                     )
 
         sns_policy = iam.PolicyStatement(
             actions=[
@@ -78,7 +86,8 @@ class NotificationServiceStack(Stack):
                 "sns:ListTopics",
                 "sns:ListSubscriptionsByTopic",
                 "sns:Unsubscribe",
-                "sns:Publish"
+                "sns:Publish",
+                "sns:ListSubscriptions"
             ],
             resources=["*"]
         )
@@ -87,13 +96,7 @@ class NotificationServiceStack(Stack):
         subscribe_lambda.add_to_role_policy(sns_policy)
         unsubscribe_lambda.add_to_role_policy(sns_policy)
         handle_notifications_lambda.add_to_role_policy(sns_policy)
-
-
-        invoke_lambda_policy = iam.PolicyStatement(
-            actions=["lambda:InvokeFunction"],
-            resources=[notify_lambda.function_arn]
-        )
-        handle_notifications_lambda.add_to_role_policy(invoke_lambda_policy)
+        list_subscriptions_lambda.add_to_role_policy(sns_policy)
 
 
         # Create API Gateway resources and methods
@@ -101,6 +104,7 @@ class NotificationServiceStack(Stack):
         subscribe_resource = notifications_resource.add_resource("subscribe")
         unsubscribe_resource = notifications_resource.add_resource("unsubscribe")
         notify_resource = notifications_resource.add_resource("notify")
+        list_subscriptions_resource = notifications_resource.add_resource("list-subscriptions")
 
 
         subscribe_resource.add_method("POST", apigateway.LambdaIntegration(subscribe_lambda),
@@ -117,6 +121,11 @@ class NotificationServiceStack(Stack):
                                       authorization_type=apigateway.AuthorizationType.COGNITO,
                                       authorizer=authorizer,
                                       )
+        
+        list_subscriptions_resource.add_method("GET", apigateway.LambdaIntegration(list_subscriptions_lambda),
+                                               authorization_type=apigateway.AuthorizationType.COGNITO,
+                                               authorizer=authorizer,
+                                               )
 
         tv_shows_stack.tv_shows_table.grant_stream_read(handle_notifications_lambda)
         movies_stack.movies_table.grant_stream_read(handle_notifications_lambda)

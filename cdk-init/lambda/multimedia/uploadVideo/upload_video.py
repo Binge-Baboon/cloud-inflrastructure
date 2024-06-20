@@ -6,7 +6,7 @@ s3_client = boto3.client('s3')
 
 
 def upload(event, context):
-    bucket_name = 'binge-baboon2'
+    bucket_name = 'binge-baboon'
     body = json.loads(event['body'])
     folder_name = body.get('folder')
     resolution = body.get('resolution')
