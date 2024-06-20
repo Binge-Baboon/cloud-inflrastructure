@@ -12,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def resize(event, context):
-    bucket = "binge-baboon"
+    bucket = "binge-baboon2"
 
     original_key = event['original_key']
     target_resolution = event['target_resolution']

@@ -33,7 +33,7 @@ class MultimediaServiceStack(Stack):
         movies_table = movies_stack.movies_table
         tv_shows_table = tv_shows_stack.tv_shows_table
 
-        bucket_name = "binge-baboon"
+        bucket_name = "binge-baboon2"
         s3_bucket = s3.Bucket(self,
                            "BingeBaboonBucket",
                            bucket_name=bucket_name,
@@ -191,7 +191,7 @@ class MultimediaServiceStack(Stack):
                                                timeout=Duration.seconds(60),
                                                environment=lambda_env,
                                                layers=[ _lambda.LayerVersion.from_layer_version_arn(self, 'ffmpeg',
-                                                                                                   'arn:aws:lambda:eu-central-1:590183980405:layer:ffmpeg:1'),
+                                                                                                   'arn:aws:lambda:eu-central-1:381492232139:layer:ffmpeg:1'),
                                                        ]
 
                                                )

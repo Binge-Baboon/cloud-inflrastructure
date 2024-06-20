@@ -8,7 +8,7 @@ from io import BytesIO
 
 def upload(event, context):
     s3 = boto3.client('s3')
-    bucket_name = 'binge-baboon'
+    bucket_name = 'binge-baboon2'
     folder_name = 'images'
     body = json.loads(event['body'])
     movie_id = body.get('id')
