@@ -3,12 +3,7 @@ import boto3
 import logging
 from shared.utils import create_response
 
-# Set up logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 def add_or_update_rating(event, context):
-    logger.info(f"Received event: {event}")
 
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Movies')
@@ -19,7 +14,6 @@ def add_or_update_rating(event, context):
         email = body['email']
         rating = body['rating']
     except Exception as e:
-        logger.error(f"Error parsing input: {e}")
         return create_response(400, {'message': 'Invalid input'})
 
     if not (1 <= rating <= 5):
@@ -51,9 +45,6 @@ def add_or_update_rating(event, context):
             },
             ReturnValues="UPDATED_NEW"
         )
-        logger.info(f"Update response: {response}")
-
         return create_response(200, {'message': 'Rating added/updated successfully', 'updated_rating': response['Attributes'].get('rating')})
     except Exception as e:
-        logger.error(f"Error updating rating: {e}")
         return create_response(500, {'message': f'Error updating rating: {str(e)}'})

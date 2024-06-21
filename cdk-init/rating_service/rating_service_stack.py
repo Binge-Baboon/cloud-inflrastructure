@@ -40,9 +40,19 @@ class RatingServiceStack(Stack):
             environment=lambda_env
         )
 
+        remove_rating_lambda = _lambda.Function(self, "RemoveMovieRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="removeMovieRating.remove_movie_rating.remove_rating",
+            code=_lambda.Code.from_asset("lambda/ratings"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
+
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         movie_service_stack.movies_table.grant_read_write_data(create_rating_lambda)
+        movie_service_stack.movies_table.grant_read_write_data(remove_rating_lambda)
 
         # Create API Gateway resources and methods
         movie_ratings_resource = api.root.add_resource("movie-ratings")
@@ -54,4 +64,9 @@ class RatingServiceStack(Stack):
         )
 
         rating_resource = movie_ratings_resource.add_resource("{username}")
+
+        movie_ratings_resource.add_method("DELETE", apigateway.LambdaIntegration(remove_rating_lambda),
+            authorization_type=apigateway.AuthorizationType.COGNITO,
+            authorizer=authorizer,
+        )
 
