@@ -142,6 +142,16 @@ class MultimediaServiceStack(Stack):
                                                     environment=lambda_env
                                                     )
 
+        delete_s3_key_lambda = _lambda.Function(self, "DeleteS3KeyFunction",
+                                                    runtime=_lambda.Runtime.PYTHON_3_12,
+                                                    handler="deleteS3Key/delete_s3_key.handler",
+                                                    code=_lambda.Code.from_asset("lambda/multimedia"),
+                                                    memory_size=128,
+                                                    timeout=Duration.seconds(10),
+                                                    environment=lambda_env
+                                                    )
+
+
         delete_movie_data_lambda.add_event_source(
             lambda_event_sources.DynamoEventSource(
                 movies_table,
@@ -161,6 +171,12 @@ class MultimediaServiceStack(Stack):
         s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
         video_resource = api.root.add_resource("videos")
+
+        video_resource.add_method("DELETE", apigateway.LambdaIntegration(delete_s3_key_lambda),
+                                          authorization_type=apigateway.AuthorizationType.COGNITO,
+                                          authorizer=authorizer,
+                                          )
+
         presigned_url_resource = api.root.add_resource("presigned_url")
 
         presigned_url_resource.add_method("GET", apigateway.LambdaIntegration(get_presigned_url_lambda),
@@ -189,6 +205,8 @@ class MultimediaServiceStack(Stack):
         s3_bucket.grant_read(get_presigned_url_lambda)
         s3_bucket.grant_read_write(delete_movie_data_lambda)
         s3_bucket.grant_read_write(delete_tv_show_data_lambda)
+        s3_bucket.grant_read_write(delete_s3_key_lambda)
+
 
         movies_table.grant_read_write_data(update_metadata_lambda)
         tv_shows_table.grant_read_write_data(update_metadata_lambda)
