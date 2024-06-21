@@ -26,7 +26,9 @@ subscriptions_stack = SubscriptionsServiceStack(app, 'SubscriptionServiceStack',
     tv_shows_stack = tv_shows_stack
 )
 UsersServiceStack(app, "UserServiceStack",
-    init_stack = init_stack
+    init_stack = init_stack,
+    movies_stack=movies_stack,
+    tv_shows_stack=tv_shows_stack
 )
 MultimediaServiceStack(app, "MultimediaServiceStack",
     init_stack = init_stack,

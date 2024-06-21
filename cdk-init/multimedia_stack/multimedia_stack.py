@@ -33,23 +33,50 @@ class MultimediaServiceStack(Stack):
         movies_table = movies_stack.movies_table
         tv_shows_table = tv_shows_stack.tv_shows_table
 
+        # Bucket name and properties
         bucket_name = "binge-baboon"
-        s3_bucket = s3.Bucket(self,
-                           "BingeBaboonBucket",
-                           bucket_name=bucket_name,
-                           cors=[
-                               s3.CorsRule(
-                                   allowed_headers=["*"],
-                                   allowed_methods=[
-                                       s3.HttpMethods.GET,
-                                       s3.HttpMethods.PUT,
-                                       s3.HttpMethods.POST,
-                                   ],
-                                   allowed_origins=["*"],
-                                   exposed_headers=[]
-                               )
-                           ]
-                           )
+        bucket_props = s3.BucketProps(
+            bucket_name=bucket_name,
+            cors=[
+                s3.CorsRule(
+                    allowed_headers=["*"],
+                    allowed_methods=[
+                        s3.HttpMethods.GET,
+                        s3.HttpMethods.PUT,
+                        s3.HttpMethods.POST,
+                    ],
+                    allowed_origins=["*"],
+                    exposed_headers=[]
+                )
+            ]
+        )
+
+        # Check if the bucket already exists
+        existing_bucket = s3.Bucket.from_bucket_name(self, "ExistingBingeBaboonBucket", bucket_name)
+
+        if existing_bucket:
+            s3_bucket = existing_bucket
+        else:
+            # Create the bucket if it doesn't exist
+            s3_bucket = s3.Bucket(self, "BingeBaboonBucket", **bucket_props)
+
+        # bucket_name = "binge-baboon"
+        # s3_bucket = s3.Bucket(self,
+        #                    "BingeBaboonBucket",
+        #                    bucket_name=bucket_name,
+        #                    cors=[
+        #                        s3.CorsRule(
+        #                            allowed_headers=["*"],
+        #                            allowed_methods=[
+        #                                s3.HttpMethods.GET,
+        #                                s3.HttpMethods.PUT,
+        #                                s3.HttpMethods.POST,
+        #                            ],
+        #                            allowed_origins=["*"],
+        #                            exposed_headers=[]
+        #                        )
+        #                    ]
+        #                    )
 
         lambda_env = {
             "BUCKET_NAME": bucket_name,
