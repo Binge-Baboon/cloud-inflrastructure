@@ -82,12 +82,32 @@ class UsersServiceStack(Stack):
             environment=lambda_env
         )
 
+        add_watched_lambda = _lambda.Function(self, "AddWatchedFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addWatched/add_watched.add",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
+
+        add_downloaded_lambda = _lambda.Function(self, "AddDownloadedFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addDownloaded/add_downloaded.add",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
+
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         users_table.grant_read_write_data(create_user_lambda)
         users_table.grant_read_write_data(get_users_lambda)
         users_table.grant_read_write_data(get_user_lambda)
         users_table.grant_read_write_data(update_user_lambda)
         users_table.grant_read_write_data(delete_user_lambda)
+        users_table.grant_read_write_data(add_watched_lambda)
+        users_table.grant_read_write_data(add_downloaded_lambda)
 
         # Create API Gateway resources and methods
         users_resource = api.root.add_resource("users")
@@ -102,7 +122,7 @@ class UsersServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
-        user_resource = users_resource.add_resource("{username}")
+        user_resource = users_resource.add_resource("{email}")
 
         user_resource.add_method("GET", apigateway.LambdaIntegration(get_user_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
@@ -118,4 +138,18 @@ class UsersServiceStack(Stack):
             authorization_type=apigateway.AuthorizationType.COGNITO,
             authorizer=authorizer,
             # api_key_required=True
+        )
+
+        user_resource_watched = users_resource.add_resource("watched")
+
+        user_resource_watched.add_method("PUT", apigateway.LambdaIntegration(add_watched_lambda),
+            authorization_type=apigateway.AuthorizationType.COGNITO,
+            authorizer=authorizer,
+        )
+
+        user_resource_watched = users_resource.add_resource("downloaded")
+
+        user_resource_watched.add_method("PUT", apigateway.LambdaIntegration(add_downloaded_lambda),
+            authorization_type=apigateway.AuthorizationType.COGNITO,
+            authorizer=authorizer,
         )
