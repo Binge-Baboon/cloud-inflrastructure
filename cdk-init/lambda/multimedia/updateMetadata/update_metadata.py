@@ -95,81 +95,119 @@ def update_metadata_in_dynamodb(table_name, video_id, metadata):
         logger.error('Error updating item in DynamoDB: %s', e)
 
 def update_tv_show_metadata_in_dynamodb(table_name, tv_show_id, episode_number, metadata):
-    try:
-        res = metadata['resolution']
-        logger.info(f'Episode number: {str(episode_number)}')
-        logger.info(f'Resolution: {str(res)}')
+    s3 = boto3.client('s3')
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('TvShows')
 
-        # Step 1: Ensure the episodes map exists
-        response = dynamodb.update_item(
-            TableName=table_name,
-            Key={
-                'id': {'S': tv_show_id}
-            },
-            UpdateExpression="SET #episodes = if_not_exists(#episodes, :empty_map)",
-            ExpressionAttributeNames={
-                "#episodes": "episodes"
-            },
-            ExpressionAttributeValues={
-                ":empty_map": {'M': {}}
-            }
-        )
+    tv_show = table.get_item(
+        Key={
+            'id': tv_show_id
+        }
+    )['Item']
 
-        # Step 2: Ensure the specific episode map exists
-        response = dynamodb.update_item(
-            TableName=table_name,
-            Key={
-                'id': {'S': tv_show_id}
-            },
-            UpdateExpression=f"SET episodes.#episode = if_not_exists(#episode, :empty_map)",
-            ExpressionAttributeNames={
-                "#episode": str(episode_number)
-            },
-            ExpressionAttributeValues={
-                ":empty_map": {'M': {}}
-            }
-        )
+    episode = tv_show['episodes'].setdefault(episode_number, {})
+    tv_show['episodes'][episode_number].setdefault(metadata['resolution'], {
+        'dataType': metadata['dataType'],
+        'size': metadata['size'],
+        'created': metadata['created'],
+        'modified': metadata['modified']
+    })
 
-        # Step 3: Ensure the specific resolution map exists
-        response = dynamodb.update_item(
-            TableName=table_name,
-            Key={
-                'id': {'S': tv_show_id}
-            },
-            UpdateExpression=f"SET episodes.#episode.#res = if_not_exists(#res, :empty_map)",
-            ExpressionAttributeNames={
-                "#episode": str(episode_number),
-                "#res": metadata['resolution']
-            },
-            ExpressionAttributeValues={
-                ":empty_map": {'M': {}}
-            }
-        )
+    update_expression = "set "
+    expression_attribute_values = {}
 
-        # Step 4: Update the resolution metadata
-        response = dynamodb.update_item(
-            TableName=table_name,
-            Key={
-                'id': {'S': tv_show_id}
-            },
-            UpdateExpression=f"SET episodes.#episode.#res = :res",
-            ExpressionAttributeNames={
-                "#episode": str(episode_number),
-                "#res": metadata['resolution']
-            },
-            ExpressionAttributeValues={
-                ":res": {
-                    'M': {
-                        'dataType': {'S': metadata['dataType']},
-                        'size': {'S': metadata['size']},
-                        'created': {'S': metadata['created']},
-                        'modified': {'S': metadata['modified']}
-                    }
-                }
-            },
-            ReturnValues="UPDATED_NEW"
-        )
+    key = 'episodes'
 
-        logger.info('UpdateItem succeeded: %s', json.dumps(response))
-    except ClientError as e:
-        logger.error('Error updating item in DynamoDB: %s', e)
+    update_expression += f"{key} = :{key}, "
+    expression_attribute_values[f":{key}"] = tv_show[key]
+
+    update_expression = update_expression.rstrip(", ")
+
+    response = table.update_item(
+        Key={
+            'id': tv_show_id
+        },
+        UpdateExpression=update_expression,
+        ExpressionAttributeValues=expression_attribute_values,
+        ReturnValues="UPDATED_NEW"
+    )
+
+    logger.info('UpdateItem succeeded: %s', json.dumps(response))
+
+    # try:
+    #     res = metadata['resolution']
+    #     logger.info(f'Episode number: {str(episode_number)}')
+    #     logger.info(f'Resolution: {str(res)}')
+    #
+    #     # # Step 1: Ensure the episodes map exists
+    #     # response = dynamodb.update_item(
+    #     #     TableName=table_name,
+    #     #     Key={
+    #     #         'id': {'S': tv_show_id}
+    #     #     },
+    #     #     UpdateExpression="SET #episodes = if_not_exists(#episodes, :empty_map)",
+    #     #     ExpressionAttributeNames={
+    #     #         "#episodes": "episodes"
+    #     #     },
+    #     #     ExpressionAttributeValues={
+    #     #         ":empty_map": {'M': {}}
+    #     #     }
+    #     # )
+    #
+    #     # Step 2: Ensure the specific episode map exists
+    #     response = dynamodb.update_item(
+    #         TableName=table_name,
+    #         Key={
+    #             'id': {'S': tv_show_id}
+    #         },
+    #         UpdateExpression=f"SET episodes.#episode = if_not_exists(#episode, :empty_map)",
+    #         ExpressionAttributeNames={
+    #             "#episode": str(episode_number)
+    #         },
+    #         ExpressionAttributeValues={
+    #             ":empty_map": {'M': {}}
+    #         }
+    #     )
+    #
+    #     # # Step 3: Ensure the specific resolution map exists
+    #     # response = dynamodb.update_item(
+    #     #     TableName=table_name,
+    #     #     Key={
+    #     #         'id': {'S': tv_show_id}
+    #     #     },
+    #     #     UpdateExpression=f"SET episodes.#episode.#res = if_not_exists(#res, :empty_map)",
+    #     #     ExpressionAttributeNames={
+    #     #         "#episode": str(episode_number),
+    #     #         "#res": metadata['resolution']
+    #     #     },
+    #     #     ExpressionAttributeValues={
+    #     #         ":empty_map": {'M': {}}
+    #     #     }
+    #     # )
+    #
+    #     # Step 4: Update the resolution metadata
+    #     response = dynamodb.update_item(
+    #         TableName=table_name,
+    #         Key={
+    #             'id': {'S': tv_show_id}
+    #         },
+    #         UpdateExpression=f"SET episodes.#episode.#res = :res",
+    #         ExpressionAttributeNames={
+    #             "#episode": str(episode_number),
+    #             "#res": metadata['resolution']
+    #         },
+    #         ExpressionAttributeValues={
+    #             ":res": {
+    #                 'M': {
+    #                     'dataType': {'S': metadata['dataType']},
+    #                     'size': {'S': metadata['size']},
+    #                     'created': {'S': metadata['created']},
+    #                     'modified': {'S': metadata['modified']}
+    #                 }
+    #             }
+    #         }
+    #     )
+    #
+    #     logger.info('UpdateItem succeeded: %s', json.dumps(response))
+    # except ClientError as e:
+    #     logger.error('Error updating item in DynamoDB: %s', e)
