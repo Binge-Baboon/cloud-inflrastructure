@@ -16,6 +16,7 @@ from aws_cdk import (
     aws_s3_notifications as s3_notifications
 )
 from constructs import Construct
+from aws_solutions_constructs.aws_sqs_lambda import SqsToLambda
 import os
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
@@ -151,6 +152,17 @@ class MultimediaServiceStack(Stack):
                                                     environment=lambda_env
                                                     )
 
+        metadata_queue = sqs.Queue(self, "MyQueue",
+                          visibility_timeout=Duration.seconds(300),
+                          retention_period=Duration.days(7))
+
+        update_metadata_lambda.add_event_source(
+            lambda_event_sources.SqsEventSource(
+                queue=metadata_queue,
+                batch_size=1
+            )
+        )
+
 
         delete_movie_data_lambda.add_event_source(
             lambda_event_sources.DynamoEventSource(
@@ -167,7 +179,8 @@ class MultimediaServiceStack(Stack):
         )
 
         # Add the S3 event notification for update
-        notification = s3_notifications.LambdaDestination(update_metadata_lambda)
+        # notification = s3_notifications.LambdaDestination(update_metadata_lambda)
+        notification = s3_notifications.SqsDestination(metadata_queue)
         s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
         video_resource = api.root.add_resource("videos")

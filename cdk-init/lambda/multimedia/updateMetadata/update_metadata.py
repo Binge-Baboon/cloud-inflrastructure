@@ -16,12 +16,20 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     logger.info(f"Received event: {json.dumps(event)}")
 
-    bucket_name = os.environ['BUCKET_NAME']
     movies_table_name = os.environ['MOVIES_TABLE_NAME']
     tv_shows_table_name = os.environ['TV_SHOWS_TABLE_NAME']
 
     for record in event['Records']:
-        key = record['s3']['object']['key']
+        # Extract S3 event data from the message body
+        message_body = json.loads(record['body'])
+
+        logger.info(f"Message body: {json.dumps(message_body)}")
+
+        s3_event = message_body['Records'][0]['s3']
+
+        # Extract bucket name and object key from the S3 event
+        bucket_name = s3_event['bucket']['name']
+        key = s3_event['object']['key']
 
         if key.startswith('videos/'):
             video_type, video_id, episode_number = extract_video_details(key)
@@ -88,63 +96,80 @@ def update_metadata_in_dynamodb(table_name, video_id, metadata):
 
 def update_tv_show_metadata_in_dynamodb(table_name, tv_show_id, episode_number, metadata):
     try:
-        # Attempt to update the DynamoDB item with nested attributes
+        res = metadata['resolution']
+        logger.info(f'Episode number: {str(episode_number)}')
+        logger.info(f'Resolution: {str(res)}')
+
+        # Step 1: Ensure the episodes map exists
         response = dynamodb.update_item(
             TableName=table_name,
             Key={
                 'id': {'S': tv_show_id}
             },
-            UpdateExpression="SET episodes.#episode = :episode",
+            UpdateExpression="SET #episodes = if_not_exists(#episodes, :empty_map)",
+            ExpressionAttributeNames={
+                "#episodes": "episodes"
+            },
+            ExpressionAttributeValues={
+                ":empty_map": {'M': {}}
+            }
+        )
+
+        # Step 2: Ensure the specific episode map exists
+        response = dynamodb.update_item(
+            TableName=table_name,
+            Key={
+                'id': {'S': tv_show_id}
+            },
+            UpdateExpression=f"SET episodes.#episode = if_not_exists(#episode, :empty_map)",
             ExpressionAttributeNames={
                 "#episode": str(episode_number)
             },
             ExpressionAttributeValues={
-                ":episode": {
+                ":empty_map": {'M': {}}
+            }
+        )
+
+        # Step 3: Ensure the specific resolution map exists
+        response = dynamodb.update_item(
+            TableName=table_name,
+            Key={
+                'id': {'S': tv_show_id}
+            },
+            UpdateExpression=f"SET episodes.#episode.#res = if_not_exists(#res, :empty_map)",
+            ExpressionAttributeNames={
+                "#episode": str(episode_number),
+                "#res": metadata['resolution']
+            },
+            ExpressionAttributeValues={
+                ":empty_map": {'M': {}}
+            }
+        )
+
+        # Step 4: Update the resolution metadata
+        response = dynamodb.update_item(
+            TableName=table_name,
+            Key={
+                'id': {'S': tv_show_id}
+            },
+            UpdateExpression=f"SET episodes.#episode.#res = :res",
+            ExpressionAttributeNames={
+                "#episode": str(episode_number),
+                "#res": metadata['resolution']
+            },
+            ExpressionAttributeValues={
+                ":res": {
                     'M': {
-                        metadata['resolution']: {
-                            'M': {
-                                'dataType': {'S': metadata['dataType']},
-                                'size': {'S': metadata['size']},
-                                'created': {'S': metadata['created']},
-                                'modified': {'S': metadata['modified']}
-                            }
-                        }
+                        'dataType': {'S': metadata['dataType']},
+                        'size': {'S': metadata['size']},
+                        'created': {'S': metadata['created']},
+                        'modified': {'S': metadata['modified']}
                     }
                 }
             },
             ReturnValues="UPDATED_NEW"
         )
+
         logger.info('UpdateItem succeeded: %s', json.dumps(response))
     except ClientError as e:
-        if e.response['Error']['Code'] == 'ValidationException':
-            # Handle case where nested attributes path is invalid; create 'episodes' and 'episode' attributes
-            try:
-                # Construct the ExpressionAttributeValues for nested attributes
-                episodes_data = {
-                    str(episode_number): {
-                        metadata['resolution']: {
-                            'dataType': metadata['dataType'],
-                            'size': metadata['size'],
-                            'created': metadata['created'],
-                            'modified': metadata['modified']
-                        }
-                    }
-                }
-
-                # Update DynamoDB with the nested attributes
-                response = dynamodb.update_item(
-                    TableName=table_name,
-                    Key={
-                        'id': {'S': tv_show_id}
-                    },
-                    UpdateExpression="SET episodes = :episodes",
-                    ExpressionAttributeValues={
-                        ":episodes": {'M': episodes_data}
-                    },
-                    ReturnValues="UPDATED_NEW"
-                )
-                logger.info('UpdateItem succeeded (inner): %s', json.dumps(response))
-            except Exception as inner_e:
-                logger.error('Error updating item in DynamoDB (inner): %s', inner_e)
-        else:
-            logger.error('Error updating item in DynamoDB: %s', e)
+        logger.error('Error updating item in DynamoDB: %s', e)
