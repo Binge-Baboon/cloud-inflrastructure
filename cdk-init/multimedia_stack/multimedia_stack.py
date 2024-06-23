@@ -16,6 +16,7 @@ from aws_cdk import (
     aws_s3_notifications as s3_notifications
 )
 from constructs import Construct
+from aws_solutions_constructs.aws_sqs_lambda import SqsToLambda
 import os
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack
@@ -33,23 +34,50 @@ class MultimediaServiceStack(Stack):
         movies_table = movies_stack.movies_table
         tv_shows_table = tv_shows_stack.tv_shows_table
 
+        # Bucket name and properties
         bucket_name = "binge-baboon"
-        s3_bucket = s3.Bucket(self,
-                           "BingeBaboonBucket",
-                           bucket_name=bucket_name,
-                           cors=[
-                               s3.CorsRule(
-                                   allowed_headers=["*"],
-                                   allowed_methods=[
-                                       s3.HttpMethods.GET,
-                                       s3.HttpMethods.PUT,
-                                       s3.HttpMethods.POST,
-                                   ],
-                                   allowed_origins=["*"],
-                                   exposed_headers=[]
-                               )
-                           ]
-                           )
+        bucket_props = s3.BucketProps(
+            bucket_name=bucket_name,
+            cors=[
+                s3.CorsRule(
+                    allowed_headers=["*"],
+                    allowed_methods=[
+                        s3.HttpMethods.GET,
+                        s3.HttpMethods.PUT,
+                        s3.HttpMethods.POST,
+                    ],
+                    allowed_origins=["*"],
+                    exposed_headers=[]
+                )
+            ]
+        )
+
+        # Check if the bucket already exists
+        existing_bucket = s3.Bucket.from_bucket_name(self, "ExistingBingeBaboonBucket", bucket_name)
+
+        if existing_bucket:
+            s3_bucket = existing_bucket
+        else:
+            # Create the bucket if it doesn't exist
+            s3_bucket = s3.Bucket(self, "BingeBaboonBucket", **bucket_props)
+
+        # bucket_name = "binge-baboon"
+        # s3_bucket = s3.Bucket(self,
+        #                    "BingeBaboonBucket",
+        #                    bucket_name=bucket_name,
+        #                    cors=[
+        #                        s3.CorsRule(
+        #                            allowed_headers=["*"],
+        #                            allowed_methods=[
+        #                                s3.HttpMethods.GET,
+        #                                s3.HttpMethods.PUT,
+        #                                s3.HttpMethods.POST,
+        #                            ],
+        #                            allowed_origins=["*"],
+        #                            exposed_headers=[]
+        #                        )
+        #                    ]
+        #                    )
 
         lambda_env = {
             "BUCKET_NAME": bucket_name,
@@ -115,6 +143,27 @@ class MultimediaServiceStack(Stack):
                                                     environment=lambda_env
                                                     )
 
+        delete_s3_key_lambda = _lambda.Function(self, "DeleteS3KeyFunction",
+                                                    runtime=_lambda.Runtime.PYTHON_3_12,
+                                                    handler="deleteS3Key/delete_s3_key.handler",
+                                                    code=_lambda.Code.from_asset("lambda/multimedia"),
+                                                    memory_size=128,
+                                                    timeout=Duration.seconds(10),
+                                                    environment=lambda_env
+                                                    )
+
+        metadata_queue = sqs.Queue(self, "MyQueue",
+                          visibility_timeout=Duration.seconds(300),
+                          retention_period=Duration.days(7))
+
+        update_metadata_lambda.add_event_source(
+            lambda_event_sources.SqsEventSource(
+                queue=metadata_queue,
+                batch_size=1
+            )
+        )
+
+
         delete_movie_data_lambda.add_event_source(
             lambda_event_sources.DynamoEventSource(
                 movies_table,
@@ -130,10 +179,17 @@ class MultimediaServiceStack(Stack):
         )
 
         # Add the S3 event notification for update
-        notification = s3_notifications.LambdaDestination(update_metadata_lambda)
+        # notification = s3_notifications.LambdaDestination(update_metadata_lambda)
+        notification = s3_notifications.SqsDestination(metadata_queue)
         s3_bucket.add_event_notification(s3.EventType.OBJECT_CREATED_PUT, notification, s3.NotificationKeyFilter(prefix="videos/"))
 
         video_resource = api.root.add_resource("videos")
+
+        video_resource.add_method("DELETE", apigateway.LambdaIntegration(delete_s3_key_lambda),
+                                          authorization_type=apigateway.AuthorizationType.COGNITO,
+                                          authorizer=authorizer,
+                                          )
+
         presigned_url_resource = api.root.add_resource("presigned_url")
 
         presigned_url_resource.add_method("GET", apigateway.LambdaIntegration(get_presigned_url_lambda),
@@ -162,6 +218,8 @@ class MultimediaServiceStack(Stack):
         s3_bucket.grant_read(get_presigned_url_lambda)
         s3_bucket.grant_read_write(delete_movie_data_lambda)
         s3_bucket.grant_read_write(delete_tv_show_data_lambda)
+        s3_bucket.grant_read_write(delete_s3_key_lambda)
+
 
         movies_table.grant_read_write_data(update_metadata_lambda)
         tv_shows_table.grant_read_write_data(update_metadata_lambda)
