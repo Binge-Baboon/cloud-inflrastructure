@@ -97,9 +97,9 @@ class UsersServiceStack(Stack):
             timeout=Duration.seconds(10),
             environment=lambda_env
           )
-        add_tv_show_rating_lambda = _lambda.Function(self, "AddTVShowRatingFunction",
+        add_tv_show_rating_lambda = _lambda.Function(self, "AdcdTVShowRatingFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="addTVShowRating.add_tv_show_rating.add_tv_show_rating",
+            handler="addTvShowRating.add_tv_show_rating.add_tv_show_rating",
             code=_lambda.Code.from_asset("lambda/users"),
             memory_size=128,
             timeout=Duration.seconds(10),
@@ -107,7 +107,7 @@ class UsersServiceStack(Stack):
          )
         remove_tv_show_rating_lambda = _lambda.Function(self, "RemoveTVShowRatingFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="removeTVShowRating.remove_tv_show_rating.remove_tv_show_rating",
+            handler="removeTvShowRating.remove_tv_show_rating.remove_tv_show_rating",
             code=_lambda.Code.from_asset("lambda/users"),
             memory_size=128,
             timeout=Duration.seconds(10),
