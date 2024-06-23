@@ -82,6 +82,38 @@ class UsersServiceStack(Stack):
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
+        add_movie_rating_lambda = _lambda.Function(self, "AddMovieRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addMovieRating.add_movie_rating.add_movie_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+           )
+        remove_movie_rating_lambda = _lambda.Function(self, "RemoveMovieRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="removeMovieRating.remove_movie_rating.remove_movie_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+          )
+        add_tv_show_rating_lambda = _lambda.Function(self, "AdcdTVShowRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addTvShowRating.add_tv_show_rating.add_tv_show_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+         )
+        remove_tv_show_rating_lambda = _lambda.Function(self, "RemoveTVShowRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="removeTvShowRating.remove_tv_show_rating.remove_tv_show_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
 
         add_watched_lambda = _lambda.Function(self, "AddWatchedFunction",
             runtime=_lambda.Runtime.PYTHON_3_12,
@@ -116,12 +148,15 @@ class UsersServiceStack(Stack):
         users_table.grant_read_write_data(get_user_lambda)
         users_table.grant_read_write_data(update_user_lambda)
         users_table.grant_read_write_data(delete_user_lambda)
+        users_table.grant_read_write_data(add_movie_rating_lambda)
+        users_table.grant_read_write_data(remove_movie_rating_lambda)
+        users_table.grant_read_write_data(add_tv_show_rating_lambda)
+        users_table.grant_read_write_data(remove_tv_show_rating_lambda)
         users_table.grant_read_write_data(add_watched_lambda)
         users_table.grant_read_write_data(add_downloaded_lambda)
         users_table.grant_read_write_data(generate_feed_lambda)
         movies_stack.movies_table.grant_read_write_data(generate_feed_lambda)
         tv_shows_stack.tv_shows_table.grant_read_write_data(generate_feed_lambda)
-
 
         # Create API Gateway resources and methods
         users_resource = api.root.add_resource("users")
@@ -153,6 +188,28 @@ class UsersServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
+
+        user_movie_ratings_resource = user_resource.add_resource("movie-ratings")
+
+        user_movie_ratings_resource.add_method("PUT", apigateway.LambdaIntegration(add_movie_rating_lambda),
+           authorization_type=apigateway.AuthorizationType.COGNITO,
+           authorizer=authorizer,
+       )
+        user_movie_ratings_resource.add_method("DELETE", apigateway.LambdaIntegration(remove_movie_rating_lambda),
+           authorization_type=apigateway.AuthorizationType.COGNITO,
+           authorizer=authorizer,
+       )
+
+        user_tv_show_ratings_resource = user_resource.add_resource("tv-show-ratings")
+
+        user_tv_show_ratings_resource.add_method("PUT", apigateway.LambdaIntegration(add_tv_show_rating_lambda),
+             authorization_type=apigateway.AuthorizationType.COGNITO,
+             authorizer=authorizer,
+         )
+        user_tv_show_ratings_resource.add_method("DELETE", apigateway.LambdaIntegration(remove_tv_show_rating_lambda),
+             authorization_type=apigateway.AuthorizationType.COGNITO,
+             authorizer=authorizer,
+         )
 
         user_resource_watched = users_resource.add_resource("watched")
 

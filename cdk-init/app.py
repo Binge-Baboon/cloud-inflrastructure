@@ -10,6 +10,7 @@ from user_service.user_service_stack import UsersServiceStack
 from multimedia_stack.multimedia_stack import MultimediaServiceStack
 from notification_service.notification_service_stack import NotificationServiceStack
 from config import REST_API_ID, REST_API_ROOT_RESOURCE_ID, AUTHORIZER_ID
+from rating_service.rating_service_stack import RatingServiceStack
 
 
 app = cdk.App()
@@ -40,5 +41,10 @@ notifications_stack = NotificationServiceStack(app, "NotificationServiceStack",
     movies_stack = movies_stack,
     tv_shows_stack = tv_shows_stack
 )
+rating_service_stack = RatingServiceStack(app, "RatingServiceStack",
+    init_stack = init_stack,
+    movie_service_stack = movies_stack,
+    tv_show_service_stack = tv_shows_stack
+                   )
 
 app.synth()
