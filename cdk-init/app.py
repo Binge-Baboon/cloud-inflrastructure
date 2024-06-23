@@ -41,7 +41,8 @@ notifications_stack = NotificationServiceStack(app, "NotificationServiceStack",
 )
 rating_service_stack = RatingServiceStack(app, "RatingServiceStack",
     init_stack = init_stack,
-    movie_service_stack = movies_stack
+    movie_service_stack = movies_stack,
+    tv_show_service_stack = tv_shows_stack
                    )
 
 app.synth()

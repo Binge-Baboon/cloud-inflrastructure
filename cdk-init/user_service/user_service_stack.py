@@ -81,6 +81,38 @@ class UsersServiceStack(Stack):
             timeout=Duration.seconds(10),
             environment=lambda_env
         )
+        add_movie_rating_lambda = _lambda.Function(self, "AddMovieRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addMovieRating.add_movie_rating.add_movie_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+           )
+        remove_movie_rating_lambda = _lambda.Function(self, "RemoveMovieRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="removeMovieRating.remove_movie_rating.remove_movie_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+          )
+        add_tv_show_rating_lambda = _lambda.Function(self, "AddTVShowRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="addTVShowRating.add_tv_show_rating.add_tv_show_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+         )
+        remove_tv_show_rating_lambda = _lambda.Function(self, "RemoveTVShowRatingFunction",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="removeTVShowRating.remove_tv_show_rating.remove_tv_show_rating",
+            code=_lambda.Code.from_asset("lambda/users"),
+            memory_size=128,
+            timeout=Duration.seconds(10),
+            environment=lambda_env
+        )
 
         # Grant Lambda functions permissions to interact with DynamoDB and S3
         users_table.grant_read_write_data(create_user_lambda)
@@ -88,6 +120,10 @@ class UsersServiceStack(Stack):
         users_table.grant_read_write_data(get_user_lambda)
         users_table.grant_read_write_data(update_user_lambda)
         users_table.grant_read_write_data(delete_user_lambda)
+        users_table.grant_read_write_data(add_movie_rating_lambda)
+        users_table.grant_read_write_data(remove_movie_rating_lambda)
+        users_table.grant_read_write_data(add_tv_show_rating_lambda)
+        users_table.grant_read_write_data(remove_tv_show_rating_lambda)
 
         # Create API Gateway resources and methods
         users_resource = api.root.add_resource("users")
@@ -119,3 +155,25 @@ class UsersServiceStack(Stack):
             authorizer=authorizer,
             # api_key_required=True
         )
+
+        user_movie_ratings_resource = user_resource.add_resource("movie-ratings")
+
+        user_movie_ratings_resource.add_method("PUT", apigateway.LambdaIntegration(add_movie_rating_lambda),
+           authorization_type=apigateway.AuthorizationType.COGNITO,
+           authorizer=authorizer,
+       )
+        user_movie_ratings_resource.add_method("DELETE", apigateway.LambdaIntegration(remove_movie_rating_lambda),
+           authorization_type=apigateway.AuthorizationType.COGNITO,
+           authorizer=authorizer,
+       )
+
+        user_tv_show_ratings_resource = user_resource.add_resource("tv-show-ratings")
+
+        user_tv_show_ratings_resource.add_method("PUT", apigateway.LambdaIntegration(add_tv_show_rating_lambda),
+             authorization_type=apigateway.AuthorizationType.COGNITO,
+             authorizer=authorizer,
+         )
+        user_tv_show_ratings_resource.add_method("DELETE", apigateway.LambdaIntegration(remove_tv_show_rating_lambda),
+             authorization_type=apigateway.AuthorizationType.COGNITO,
+             authorizer=authorizer,
+         )
