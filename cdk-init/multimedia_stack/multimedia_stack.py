@@ -16,7 +16,6 @@ from aws_cdk import (
     aws_s3_notifications as s3_notifications
 )
 from constructs import Construct
-from aws_solutions_constructs.aws_sqs_lambda import SqsToLambda
 import os
 
 from cdk_init.cdk_init_stack import BingeBaboonServiceStack

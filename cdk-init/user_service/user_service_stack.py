@@ -225,8 +225,9 @@ class UsersServiceStack(Stack):
             authorizer=authorizer,
         )
 
-        user_resource_feed = users_resource.add_resource("feed")
-        user_resource_feed = user_resource_feed.add_resource("{user}")
+        # users_resource_feed = users_resource.add_resource("feed")
+        # user_resource_feed = users_resource_feed.add_resource("{user}")
+        user_resource_feed = user_resource.add_resource("feed")
 
         user_resource_feed.add_method("GET", apigateway.LambdaIntegration(generate_feed_lambda),
             authorization_type=apigateway.AuthorizationType.COGNITO,
