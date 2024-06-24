@@ -29,7 +29,7 @@ def generate(event, context):
     movies_table = dynamodb.Table('Movies')
     tvshows_table = dynamodb.Table('TvShows')
 
-    email = event['pathParameters']['user']
+    email = event['pathParameters']['email']
     user = user_table.get_item(
         Key={
             'email': email
