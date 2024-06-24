@@ -72,10 +72,12 @@ def generate(event, context):
 def calculate_ranking(contents, table, user, ranking):
     points = 10
     for i in range(len(contents)-1, max(0, len(contents)-10), -1):
-        content = table.get_item(Key={'id': contents[i]})['Item']
+        content_response = table.get_item(Key={'id': contents[i]})
 
-        rank_content(content, points, user, ranking)
-        points -= 1
+        if 'Item' in content_response:
+            content = content_response['Item']
+            rank_content(content, points, user, ranking)
+            points -= 1
 
 def rank_content(content, points, user, ranking):
     for genre in content.get('genres', []):
