@@ -18,7 +18,9 @@ def create(event, context):
         'address': body.get('address'),
         'subscribed': body.get('subscribed'),
         'watched': body.get('watched'),
-        'downloads': body.get('downloads')
+        'downloads': body.get('downloads'),
+        'movieRatings': body.get('movieRatings'),
+        'tvShowRatings': body.get('tvShowRatings')
     }
 
     table.put_item(Item=item)
