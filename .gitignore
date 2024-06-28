@@ -6,7 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+#Files
+cloudformation-template-update-stack.json
+meta.json
+serverless-state.json
+
 # Distribution / packaging
+./*/serverless/
 .Python
 build/
 develop-eggs/
@@ -158,3 +164,28 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+/episodes-service/.serverless/requirements/.completed_requirements
+/movies-service/.serverless/requirements/.completed_requirements
+/tvshows-service/.serverless/requirements/.completed_requirements
+/videos-service/.serverless/requirements/.completed_requirements
+/.idea/.gitignore
+/api-gateway/.serverless/api-gateway.zip
+/.idea/cloud-inflrastructure.iml
+/api-gateway/.serverless/cloudformation-template-create-stack.json
+/episodes-service/.serverless/cloudformation-template-create-stack.json
+/tvshows-service/.serverless/cloudformation-template-create-stack.json
+/videos-service/.serverless/cloudformation-template-create-stack.json
+/episodes-service/.serverless/episodes-service.zip
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/episodes-service/.serverless/requirements/requirements.txt
+/episodes-service/.serverless/requirements.txt
+/movies-service/.serverless/requirements/requirements.txt
+/tvshows-service/.serverless/requirements/requirements.txt
+/tvshows-service/.serverless/requirements.txt
+/videos-service/.serverless/requirements/requirements.txt
+/videos-service/.serverless/requirements.txt
+/tvshows-service/.serverless/tvshows-service.zip
+/.idea/vcs.xml
+/videos-service/.serverless/videos-service.zip
